@@ -1,0 +1,15 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div id="make-new-post" class="container">
+        <form id="new-post" method="post" action="">
+            {% csrf_token %}
+            <div class="textarea">
+                <textarea class="form-control" id="text" name="textfield" rows="3"></textarea>
+            </div>
+            <div id="submit" class="d-grid gap-2">
+                <button class="btn btn-primary" type="submit">Post</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

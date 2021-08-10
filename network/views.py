@@ -62,7 +62,7 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-def submitPost(request, id):
+def post(request, id):
     if request.method == "POST":
         textArea = request.get["textfield"]
     else:

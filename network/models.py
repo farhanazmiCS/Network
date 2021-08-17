@@ -3,25 +3,28 @@ from django.db import models
 
 
 class User(AbstractUser):
-    # Refer to: https://stackoverflow.com/questions/2642613/what-is-related-name-used-for-in-django for details on related_name.
-    followers = models.ManyToManyField("User", related_name="fs")
-    following = models.ManyToManyField("User", related_name="fg")
+    # Every profile will have a many-to-many relationship with many other profiles
+    followers = models.ManyToManyField('User', related_name="fs")
+    following = models.ManyToManyField('User', related_name="fg")
 
 class Post(models.Model):
-    originalPoster = models.ForeignKey("User", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="userpost")
+    originalPoster = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.TextField()
-    likes = models.ManyToManyField("User", related_name="l")
-    dislikes = models.ManyToManyField("User", related_name="dl")
-    totalLikes = models.IntegerField()
-    totalDislikes = models.IntegerField()
+    likes = models.ManyToManyField(User, blank=True, related_name="l")
+    dislikes = models.ManyToManyField(User, blank=True, related_name="dl")
+    totalLikes = models.IntegerField(default=0)
+    totalDislikes = models.IntegerField(default=0)
 
     def serialize(self):
         return {
             "id": self.id,
-            "poster": self.originalPoster,
+            "poster": self.originalPoster.username,
             "post": self.post,
-            "likes": self.likes,
-            "dislikes": self.dislikes
+            "totalLikes": self.totalLikes,
+            "totalDislikes": self.totalDislikes,
+            "likes": [user.likes for user in self.likes.all()],
+            "dislikes": [user.likes for user in self.likes.all()],
         }
 
 class Comment(models.Model):

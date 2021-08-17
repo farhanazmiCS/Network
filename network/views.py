@@ -1,11 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
-
+from .models import User, Post, Comment
 
 def index(request):
     return render(request, "network/index.html")
@@ -62,8 +61,34 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-def post(request, id):
+def post(request):
     if request.method == "POST":
-        textArea = request.get["textfield"]
-    else:
-        pass
+        try:
+            # Get post information
+            postText = request.POST["textfield"]
+            # Save post data into the database
+            post = Post(user=request.user, originalPoster=request.user, post=postText)
+            post.save()
+        except:
+            return HttpResponse("Error. Something wrong happened.")
+    return HttpResponseRedirect(reverse("index"))
+
+def like(request):
+    pass
+        
+def dislike(request):
+    #TODO
+    pass
+
+def comment(request):
+    #TODO
+    pass
+
+def getPost(request, id):
+    if request.method == "GET":
+        try:
+            getPost = Post.objects.get(id=id)
+        except Post.DoesNotExist:
+            return HttpResponse("Post does not exist")
+        return JsonResponse(getPost.serialize())
+        

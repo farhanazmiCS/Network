@@ -2,7 +2,7 @@
 
 {% block body %}
     <div id="make-new-post" class="container">
-        <form id="new-post" method="post" action="">
+        <form id="new-post" method="post" action="/posts">
             {% csrf_token %}
             <div class="textarea">
                 <textarea class="form-control" id="text" name="textfield" rows="3"></textarea>

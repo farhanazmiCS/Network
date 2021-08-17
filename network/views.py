@@ -9,7 +9,6 @@ from .models import User, Post, Comment
 def index(request):
     return render(request, "network/index.html")
 
-
 def login_view(request):
     if request.method == "POST":
 
@@ -71,6 +70,16 @@ def post(request):
             post.save()
         except:
             return HttpResponse("Error. Something wrong happened.")
+    elif request.method == "GET":
+        try:
+            allPosts = Post.objects.filter()
+            postlist = []
+            for l in allPosts:
+                post_element = l.serialize()
+                postlist.append(post_element)
+            return JsonResponse(postlist, safe=False)
+        except:
+            return HttpResponse("Error. Did not manage to retrive necessary information.")
     return HttpResponseRedirect(reverse("index"))
 
 def like(request):

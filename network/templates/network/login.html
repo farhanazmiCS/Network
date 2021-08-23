@@ -1,24 +1,33 @@
-{% extends "network/layout.html" %}
+{% extends 'network/layout.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block navbar %}{% endblock %}
 
 {% block body %}
+    <div class="all">
+        <h2 id="heading">Network</h2>
+        <div class="square">
 
-    <h2>Login</h2>
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %}
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+            <form action="{% url 'login' %}" method="post">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input id="username" autofocus class="form-control" type="text" name="username" placeholder="Username">
+                </div>
+                <div class="input-group mb-1">
+                    <input id="password" class="form-control" type="password" name="password" placeholder="Password">
+                </div>
+                <div class="input-group mb-1">
+                    <button id="login" class="btn btn-primary" type="submit">Login</button>
+                </div>
+            </form>
 
-    <form action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <input autofocus class="form-control" type="text" name="username" placeholder="Username">
+            <p>Don't have an account? <a href="{% url 'register' %}">Register here.</a></p>
         </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Login">
-    </form>
-
-    Don't have an account? <a href="{% url 'register' %}">Register here.</a>
-
-{% endblock %}
+    </div>
+{% endblock%}

@@ -1,8 +1,49 @@
+body {
+    font-family: 'Jura', sans-serif;
+    font-weight: 700;
+}
+
 #make-new-post {
     margin: 10px;
 }
+.all {
+    margin-top: 10%;
+}
 
-.mb-3 {
-    padding-left: 25%;
-    padding-right: 25%;
+#heading {
+    text-align: center;
+}
+
+.input-group mb-1 {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0px;
+    width: 50%;
+    text-align: center;
+}
+
+#username, #password, #email, #confirmation {
+    margin: 10px;
+}
+
+#login, #register {
+    margin: 0 auto;
+    width: 25%;
+}
+
+p {
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 15px;
+}
+
+.square {
+    margin-left: 25%;
+    margin-right: 25%;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #dedede;
+}
+
+a {
+    text-decoration: none;
 }

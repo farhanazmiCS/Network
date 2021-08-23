@@ -1,30 +1,40 @@
-{% extends "network/layout.html" %}
+{% extends 'network/layout.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block navbar %}{% endblock %}
 
 {% block body %}
+    <div class="all">
+        <h2 id="heading">Network</h2>
+        <h5 id="heading">Register for an account.</h5>
 
-    <h2>Register</h2>
+        {% if message %}
+            <div>{{ message }}</div>
+        {% endif %}
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+        <div class="square">
+            <form action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <div class="input-group mb-1">
+                    <input id="username" class="form-control" autofocus type="text" name="username" placeholder="Username">
+                </div>
+                <div class="input-group mb-1">
+                    <input id="email" class="form-control" type="email" name="email" placeholder="Email Address">
+                </div>
+                <div class="input-group mb-1">
+                    <input id="password" class="form-control" type="password" name="password" placeholder="Password">
+                </div>
+                <div class="input-group mb-1">
+                    <input id="confirmation" class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+                </div>
+                <div class="input-group mb-1">
+                    <button id="register" class="btn btn-primary" type="submit">Register</button>
+                </div>
+            </form>
 
-    <form action="{% url 'register' %}" method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <input class="form-control" autofocus type="text" name="username" placeholder="Username">
+            <p>Already have an account? <a href="{% url 'login' %}">Log In here.</a></p>
         </div>
-        <div class="mb-3">
-            <input class="form-control" type="email" name="email" placeholder="Email Address">
-        </div>
-        <div class="mb-3">
-            <input class="form-control" type="password" name="password" placeholder="Password">
-        </div>
-        <div class="mb-3">
-            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Register">
-    </form>
-
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
-
+    </div>
 {% endblock %}

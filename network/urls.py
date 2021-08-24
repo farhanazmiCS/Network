@@ -11,5 +11,8 @@ urlpatterns = [
 
     # API Route
     path("posts", views.post, name="submit"),
-    path("posts/<int:id>", views.getPost, name="getPost")
+    # Search post based on id of post
+    path("posts/<int:id>", views.getPostbyId, name="getPostbyId"),
+    # Search post based on users
+    path("posts/<str:username>", views.getPostsbyUser, name="getPostbyUser")
 ]

@@ -17,19 +17,22 @@
         <div class="square">
             <form action="{% url 'register' %}" method="post">
                 {% csrf_token %}
-                <div class="input-group mb-1">
-                    <input id="username" class="form-control" autofocus type="text" name="username" placeholder="Username">
+                <div class="profilepicdiv">
+                    <img id="profilepic" class="rounded-circle">
                 </div>
-                <div class="input-group mb-1">
-                    <input id="email" class="form-control" type="email" name="email" placeholder="Email Address">
+                <div class="input-group mb-0">
+                    {{ form.Register.username }}
                 </div>
-                <div class="input-group mb-1">
-                    <input id="password" class="form-control" type="password" name="password" placeholder="Password">
+                <div class="input-group mb-0">
+                    {{ form.Register.email }}
                 </div>
-                <div class="input-group mb-1">
-                    <input id="confirmation" class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+                <div class="input-group mb-0">
+                    {{ form.Register.password }}
                 </div>
-                <div class="input-group mb-1">
+                <div class="input-group mb-0">
+                    {{ form.Register.confirmation }}
+                </div>
+                <div class="input-group mb-0">
                     <button id="register" class="btn btn-primary" type="submit">Register</button>
                 </div>
             </form>

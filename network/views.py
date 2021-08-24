@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from . import registrationform
 
 from .models import User, Post, Comment
 
@@ -58,29 +59,10 @@ def register(request):
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "network/register.html")
-
-def post(request):
-    if request.method == "POST":
-        try:
-            # Get post information
-            postText = request.POST["textfield"]
-            # Save post data into the database
-            post = Post(user=request.user, originalPoster=request.user, post=postText)
-            post.save()
-        except:
-            return HttpResponse("Error. Something wrong happened.")
-    elif request.method == "GET":
-        try:
-            allPosts = Post.objects.filter()
-            postlist = []
-            for l in allPosts:
-                post_element = l.serialize()
-                postlist.append(post_element)
-            return JsonResponse(postlist, safe=False)
-        except:
-            return HttpResponse("Error. Did not manage to retrive necessary information.")
-    return HttpResponseRedirect(reverse("index"))
+        form = registrationform
+        return render(request, "network/register.html", {
+            'form': form
+        })
 
 def like(request):
     pass
@@ -93,11 +75,38 @@ def comment(request):
     #TODO
     pass
 
-def getPost(request, id):
-    if request.method == "GET":
+def post(request):
+    if request.method == "POST":
         try:
-            getPost = Post.objects.get(id=id)
-        except Post.DoesNotExist:
-            return HttpResponse("Post does not exist")
-        return JsonResponse(getPost.serialize())
-        
+            # Get post information
+            postText = request.POST["textfield"]
+            # Save post data into the database
+            post = Post(user=request.user, originalPoster=request.user, post=postText)
+            post.save()
+        except:
+            return HttpResponse("Error. Did not manage to make post.")
+
+    elif request.method == "GET":
+        try:
+            allPosts = Post.objects.all()
+            postlist = [l.serialize() for l in allPosts]
+            return JsonResponse(postlist, safe=False)
+        except:
+            return HttpResponse("Error. Did not manage to retrive necessary information.")
+
+    return HttpResponseRedirect(reverse("index"))
+
+def getPostbyId(request, id):
+    try:
+        getPost = Post.objects.get(id=id)
+    except Post.DoesNotExist:
+        return HttpResponse("Post does not exist")
+    return JsonResponse(getPost.serialize())
+
+def getPostsbyUser(request, username):
+    try:
+        allPosts = Post.objects.all()
+        postslist = [l.serialize() for l in allPosts if l.originalPoster.username == username]
+    except Post.DoesNotExist:
+        return HttpResponse("An error occured")
+    return JsonResponse(postslist, safe=False)

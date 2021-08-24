@@ -6,6 +6,7 @@ class User(AbstractUser):
     # Every profile will have a many-to-many relationship with many other profiles
     followers = models.ManyToManyField('User', related_name="fs")
     following = models.ManyToManyField('User', related_name="fg")
+    profilePic = models.ImageField(blank=True)
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="userpost")

@@ -1,30 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('#all-posts').addEventListener('click', () => newsfeed());
+    document.querySelector('#all-posts').addEventListener('click', () => newsfeedAll());
 
     // Load feed as default
-    newsfeed();
+    newsfeedAll();
 });
 
-function newsfeed() {
+function newsfeedAll() {
+    fetchAllPosts();
+    // Hide and show the appropriate views
+    document.querySelector('#newsfeed-all').style.display = 'block';
+    document.querySelector('#newsfeed-following').style.display = 'none';
+}
+
+function fetchAllPosts() {
     fetch('/posts')
     .then(response => response.json())
     .then(post => {
-        post.forEach(loopelement)
+        post.forEach(posts)
     });
-    document.querySelector('#make-new-post').style.display = 'block';
+
+    function posts(each) {
+        // Append all items into this div
+        let div = document.createElement('div');
+        
+        // Define elements
+        let hPoster = document.createElement('h5');
+        let hFeedpost = document.createElement('p');
+
+        // Define innerHTML of elements
+        let poster = document.createTextNode(`${each.poster}`);
+        let feedpost = document.createTextNode(`${each.post}`);
+
+        // Append innerHTML into elements
+        hPoster.appendChild(poster);
+        hFeedpost.appendChild(feedpost);
+
+        // Append elements into div
+        div.appendChild(hPoster);
+        div.appendChild(hFeedpost);
+
+        // Append div into postsAll
+        document.querySelector('#postsAll').appendChild(div);
+    }
 }
 
-function loopelement(eachpost) {
-    // Append all items into this div
-    let div = document.createElement('div');
-    let hPoster = document.createElement('h5');
-    let hFeedpost = document.createElement('p');
-    let poster = document.createTextNode(`${eachpost.poster}`);
-    let feedpost = document.createTextNode(`${eachpost.post}`);
-    hPoster.appendChild(poster);
-    hFeedpost.appendChild(feedpost);
-    div.appendChild(hPoster);
-    div.appendChild(hFeedpost);
+function newsfeedFollowing() {
+    // TODO
+}
+
+function fetchFollowingPosts() {
+    // TODO
 }
 
 function getProfile() {

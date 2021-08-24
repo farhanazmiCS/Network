@@ -2,16 +2,34 @@
 {% load static %}
 
 {% block body %}
-    <div id="make-new-post" class="container">
-        <form id="new-post" method="post" action="/posts">
-            {% csrf_token %}
-            <div class="textarea">
-                <textarea class="form-control" id="text" name="textfield" rows="3"></textarea>
-            </div>
-            <div id="submit" class="d-grid gap-2">
-                <button class="btn btn-primary" type="submit">Post</button>
-            </div>
-        </form>
+
+    <div id="newsfeed-all">
+        <div id="make-new-post" class="container">
+            <form id="new-post" method="post" action="/posts">
+                {% csrf_token %}
+                <div class="textarea">
+                    <textarea class="form-control" id="text" name="textfield" rows="3"></textarea>
+                </div>
+                <div id="submit" class="d-grid gap-2">
+                    <button class="btn btn-primary" type="submit">Post</button>
+                </div>
+            </form>
+        </div>
+        <div id="postsAll" class="container">
+        </div>
+    </div>
+    <div id="newsfeed-following">
+        <div id="make-new-post" class="container">
+            <form id="new-post" method="post" action="/posts">
+                {% csrf_token %}
+                <div class="textarea">
+                    <textarea class="form-control" id="text" name="textfield" rows="3"></textarea>
+                </div>
+                <div id="submit" class="d-grid gap-2">
+                    <button class="btn btn-primary" type="submit">Post</button>
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}
 

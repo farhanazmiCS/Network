@@ -14,7 +14,7 @@ body {
     text-align: center;
 }
 
-.input-group mb-1 {
+.input-group mb-0 {
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 0px;
@@ -46,4 +46,23 @@ p {
 
 a {
     text-decoration: none;
+}
+
+.profilepicdiv {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0px;
+    width: 50%;
+    text-align: center;
+}
+
+#profilepic {
+    margin-top: 10px;
+    border: 1px solid grey;
+    height: 75px;
+    width: 75px;
+}
+
+#profilepic:hover {
+    color: #d4d4d4;
 }

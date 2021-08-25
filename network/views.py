@@ -1,11 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.db.models.fields import DateField
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from . import registrationform
 
 from .models import User, Post, Comment
+from datetime import date, datetime
 
 def index(request):
     return render(request, "network/index.html")
@@ -80,8 +82,11 @@ def post(request):
         try:
             # Get post information
             postText = request.POST["textfield"]
+            # Get current date and time
+            dateStamp = date.today()
+            timeStamp = datetime.now().time()
             # Save post data into the database
-            post = Post(user=request.user, originalPoster=request.user, post=postText)
+            post = Post(user=request.user, originalPoster=request.user, post=postText, date=dateStamp, time=timeStamp)
             post.save()
         except:
             return HttpResponse("Error. Did not manage to make post.")

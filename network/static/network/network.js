@@ -22,22 +22,31 @@ function fetchAllPosts() {
     function posts(each) {
         // Append all items into this div
         let div = document.createElement('div');
+        div.id = 'post';
         
         // Define elements
         let hPoster = document.createElement('h5');
         let hFeedpost = document.createElement('p');
+        let hdatetime = document.createElement('p');
 
         // Define innerHTML of elements
         let poster = document.createTextNode(`${each.poster}`);
         let feedpost = document.createTextNode(`${each.post}`);
+        let datetime = document.createTextNode(`${each.timestamp}`);
 
         // Append innerHTML into elements
         hPoster.appendChild(poster);
         hFeedpost.appendChild(feedpost);
+        hdatetime.appendChild(datetime);
+
+        // Breakline
+        let hr = document.createElement('hr')
 
         // Append elements into div
         div.appendChild(hPoster);
         div.appendChild(hFeedpost);
+        div.appendChild(hdatetime);
+        div.appendChild(hr);
 
         // Append div into postsAll
         document.querySelector('#postsAll').appendChild(div);

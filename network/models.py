@@ -16,6 +16,8 @@ class Post(models.Model):
     dislikes = models.ManyToManyField(User, blank=True, related_name="dl")
     totalLikes = models.IntegerField(default=0)
     totalDislikes = models.IntegerField(default=0)
+    date = models.DateField(blank=True, null=True)
+    time = models.TimeField(blank=True, null=True)
 
     def serialize(self):
         return {
@@ -26,6 +28,7 @@ class Post(models.Model):
             "totalDislikes": self.totalDislikes,
             "likes": [user.likes for user in self.likes.all()],
             "dislikes": [user.likes for user in self.likes.all()],
+            "timestamp": f"Posted on {self.date} at {self.time}"
         }
 
 class Comment(models.Model):

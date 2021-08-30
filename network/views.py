@@ -1,16 +1,33 @@
+import json, requests
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.db.models.fields import DateField
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http.response import HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render
 from django.urls import reverse
+from django.core.paginator import Paginator
+
 from . import registrationform
 
 from .models import User, Post, Comment
 from datetime import date, datetime
 
 def index(request):
-    return render(request, "network/index.html")
+    fetch = requests.get('http://127.0.0.1:10000/allposts')
+    posts = fetch.content
+    # json.loads() work on a list of dicts too!
+    json_data = json.loads(posts)
+    # Takes json_data and separates them to pages of 5
+    p = Paginator(json_data, 5)
+    # Gets the page number from the url. If user inputs a page that doesn't exist, set to 1.
+    page_number = request.GET.get('page', 1)
+    # Load content of the requested page
+    current_page = p.page(page_number)
+    return render(request, 'network/index.html', {
+        'page': current_page,
+        'page_num': page_number
+    })
 
 def login_view(request):
     if request.method == "POST":
@@ -23,7 +40,7 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("index", args=[1]))
         else:
             return render(request, "network/login.html", {
                 "message": "Invalid username and/or password."
@@ -34,7 +51,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("index", args=[1]))
 
 
 def register(request):
@@ -67,9 +84,6 @@ def register(request):
         })
 
 def like(request):
-    pass
-        
-def dislike(request):
     #TODO
     pass
 
@@ -78,40 +92,22 @@ def comment(request):
     pass
 
 def post(request):
-    if request.method == "POST":
+    if request.method == "GET":
+        try:
+            # Retrieve all posts, order by date and time in descending order
+            allPosts = Post.objects.all().order_by("-date", "-time")
+        except Post.DoesNotExist:
+            return HttpResponse("Error. Did not manage to retrive necessary information.")
+        return JsonResponse([objects.serialize() for objects in allPosts], safe=False)
+    elif request.method == "POST":
         try:
             # Get post information
             postText = request.POST["textfield"]
             # Get current date and time
             dateStamp = date.today()
-            timeStamp = datetime.now().time()
+            timeStamp = datetime.now().time().replace(microsecond=0)
             # Save post data into the database
-            post = Post(user=request.user, originalPoster=request.user, post=postText, date=dateStamp, time=timeStamp)
-            post.save()
+            Post(user=request.user, originalPoster=request.user, post=postText, date=dateStamp, time=timeStamp).save()
         except:
-            return HttpResponse("Error. Did not manage to make post.")
-
-    elif request.method == "GET":
-        try:
-            allPosts = Post.objects.all()
-            postlist = [l.serialize() for l in allPosts]
-            return JsonResponse(postlist, safe=False)
-        except:
-            return HttpResponse("Error. Did not manage to retrive necessary information.")
-
-    return HttpResponseRedirect(reverse("index"))
-
-def getPostbyId(request, id):
-    try:
-        getPost = Post.objects.get(id=id)
-    except Post.DoesNotExist:
-        return HttpResponse("Post does not exist")
-    return JsonResponse(getPost.serialize())
-
-def getPostsbyUser(request, username):
-    try:
-        allPosts = Post.objects.all()
-        postslist = [l.serialize() for l in allPosts if l.originalPoster.username == username]
-    except Post.DoesNotExist:
-        return HttpResponse("An error occured")
-    return JsonResponse(postslist, safe=False)
+            return HttpResponseNotFound("Error. Did not manage to make post.")
+        return HttpResponseRedirect(reverse('index'))

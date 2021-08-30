@@ -22,7 +22,7 @@ class Post(models.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "poster": self.originalPoster.username,
+            "op": self.originalPoster.username,
             "post": self.post,
             "totalLikes": self.totalLikes,
             "totalDislikes": self.totalDislikes,

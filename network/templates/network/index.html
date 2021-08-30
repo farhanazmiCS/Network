@@ -25,6 +25,12 @@
             <h5>{{ post.op }}</h5>
             <p>{{ post.post }}</p>
             <p>{{ post.timestamp }}</p>
+            <div class="total-likes">
+                <i id="like" class="far fa-thumbs-up"></i> {{ post.totalLikes }}
+            </div>
+            <div class="comment">
+                <i class="fas fa-comment"></i> Comment
+            </div>
             <hr>
         {% endfor %}
         </div>
@@ -33,17 +39,29 @@
             <ul class="pagination">
                 {% if page.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="{% url 'index' %}?page={{ page.previous_page_number }}" aria-label="Previous">
+                    <a class="page-link" href="{% url 'index' %}?page=1" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'index' %}?page={{ page.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&#60;</span>
+                    </a>
+                </li>
+                <li class="page-item"><a id="current-page" class="page-link" href="{% url 'index' %}?page={{ page.previous_page_number }}">{{ page_num_before }}</a></li>
                 {% endif %}
-
-                <li class="page-item"><a id="current-page" class="page-link">Page {{ page_num }}</a></li>
+                
+                <li class="page-item active"><a id="current-page" class="page-link">{{ page_num }}</a></li>
                 
                 {% if page.has_next %}
+                <li class="page-item"><a id="current-page" class="page-link" href="{% url 'index' %}?page={{ page.next_page_number }}">{{ page_num_after }}</a></li>
                 <li class="page-item">
                     <a class="page-link" href="{% url 'index' %}?page={{ page.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&#62;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'index' %}?page={{ last_page }}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

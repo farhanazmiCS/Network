@@ -25,3 +25,7 @@ function loadAll() {
     document.querySelector('#newsfeed-all').style.display = 'block';
     document.querySelector('#newsfeed-following').style.display = 'none';
 }
+
+function likePost() {
+    // TODO
+}

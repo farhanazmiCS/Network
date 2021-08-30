@@ -74,6 +74,14 @@ a {
     background-color: white;
 }
 
+.total-likes, .comment {
+    display: inline-block;
+}
+
+.comment {
+    margin-left: 20px;
+}
+
 .tab:hover {
     color: lightblue;
 }

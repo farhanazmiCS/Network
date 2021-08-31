@@ -11,29 +11,6 @@ from django.core.paginator import Paginator
 from . import registrationform
 
 from .models import User, Post, Comment
-from datetime import date, datetime
-
-def index(request):
-    fetch = requests.get('http://127.0.0.1:10000/allposts')
-    posts = fetch.content
-    # Decodes the JSON (Works on list of json objects too!)
-    json_data = json.loads(posts)
-    # Takes json_data and separates them to pages of 5
-    p = Paginator(json_data, 10)
-    # Gets the page number from the url. If user inputs a page that doesn't exist, set to 1.
-    page_number = request.GET.get('page', 1)
-    page_number_before = int(page_number) - 1
-    page_number_after = int(page_number) + 1
-    last_page = p.num_pages
-    # Load content of the requested page
-    current_page = p.page(page_number)
-    return render(request, 'network/index.html', {
-        'page': current_page,
-        'page_num': page_number,
-        'page_num_before': page_number_before,
-        'page_num_after': page_number_after,
-        'last_page': last_page
-    })
 
 def login_view(request):
     if request.method == "POST":
@@ -88,32 +65,75 @@ def register(request):
         return render(request, "network/register.html", {
             'form': form
         })
-
-def like(request):
-    #TODO
-    pass
-
-def comment(request):
-    #TODO
-    pass
+    
+def index(request):
+    fetch = requests.get('http://127.0.0.1:10000/allposts')
+    posts = fetch.content
+    # Decodes the JSON (Works on list of json objects too!)
+    json_data = json.loads(posts)
+    # Takes json_data and separates them to pages of 5
+    p = Paginator(json_data, 10)
+    # Gets the page number from the url. If user inputs a page that doesn't exist, set to 1.
+    page_number = request.GET.get('page', 1)
+    page_number_before = int(page_number) - 1
+    page_number_after = int(page_number) + 1
+    last_page = p.num_pages
+    # Load content of the requested page
+    current_page = p.page(page_number)
+    return render(request, 'network/index.html', {
+        'page': current_page,
+        'page_num': page_number,
+        'page_num_before': page_number_before,
+        'page_num_after': page_number_after,
+        'last_page': last_page
+    })
 
 def post(request):
     if request.method == "GET":
         try:
             # Retrieve all posts, order by date and time in descending order
-            allPosts = Post.objects.all().order_by("-date", "-time")
+            allPosts = Post.objects.all().order_by("-timestamp")
         except Post.DoesNotExist:
-            return HttpResponse("Error. Did not manage to retrive necessary information.")
+            return HttpResponseNotFound("Your feed is empty.")
         return JsonResponse([objects.serialize() for objects in allPosts], safe=False)
-    elif request.method == "POST":
+    elif request.method == 'POST':
         try:
             # Get post information
             postText = request.POST["textfield"]
-            # Get current date and time
-            dateStamp = date.today()
-            timeStamp = datetime.now().time().replace(microsecond=0)
             # Save post data into the database
-            Post(user=request.user, originalPoster=request.user, post=postText, date=dateStamp, time=timeStamp).save()
+            Post(user=request.user, originalPoster=request.user, post=postText).save()
         except:
             return HttpResponseNotFound("Error. Did not manage to make post.")
         return HttpResponseRedirect(reverse('index'))
+
+def postId(request, id):
+    try:
+        post = Post.objects.get(id=id)
+    except Post.DoesNotExist:
+        return HttpResponseNotFound('Post does not exist or was deleted.')
+    
+    if request.method == 'GET':
+        return JsonResponse(post.serialize())
+
+    # PUT request method used to amend the data for liking a post
+    elif request.method == 'PUT':
+        data = json.loads(request.body)
+        if data.get('isLiked') == 'false':
+            # If a PUT request is requested and data shows that post is not liked, add 1 to like count
+            post.likes = int(data['likes']) + 1
+            # Add the current logged on user to the list
+            likedBy = data['likedBy']
+            likedBy.append(request.user)
+            post.likedBy = likedBy
+        elif data.get('isLiked') == 'true':
+            # If a PUT request is requested and data shows that post is liked, subtract 1 from like count
+            post.likes = int(data['likes']) - 1
+            # Remove the current logged on user from the list
+            likedBy = data['likedBy']
+            likedBy.remove(request.user)
+            post.likedBy = likedBy
+        # Set the value of database to value in JSON
+        post.isLiked = data['isLiked']
+        # Save to database
+        post.save()
+        return HttpResponse(status=200)

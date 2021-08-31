@@ -9,26 +9,23 @@ class User(AbstractUser):
     profilePic = models.ImageField(blank=True)
 
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="userpost")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="loggedUser")
     originalPoster = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.TextField()
-    likes = models.ManyToManyField(User, blank=True, related_name="l")
-    dislikes = models.ManyToManyField(User, blank=True, related_name="dl")
-    totalLikes = models.IntegerField(default=0)
-    totalDislikes = models.IntegerField(default=0)
-    date = models.DateField(blank=True, null=True)
-    time = models.TimeField(blank=True, null=True)
+    isLiked = models.BooleanField(default=False)
+    likes = models.IntegerField(default=0)
+    likedBy = models.ManyToManyField(User, related_name="likers")
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def serialize(self):
         return {
             "id": self.id,
             "op": self.originalPoster.username,
             "post": self.post,
-            "totalLikes": self.totalLikes,
-            "totalDislikes": self.totalDislikes,
-            "likes": [user.likes for user in self.likes.all()],
-            "dislikes": [user.likes for user in self.likes.all()],
-            "timestamp": f"Posted on {self.date} at {self.time}"
+            "isLiked": self.isLiked,
+            "totalLikes": self.likes,
+            "likedBy": [likers.user for likers in self.likedBy.all()],
+            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p")
         }
 
 class Comment(models.Model):

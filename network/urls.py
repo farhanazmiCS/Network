@@ -11,4 +11,5 @@ urlpatterns = [
 
     # API Routes
     path("allposts", views.post, name="allPosts"),
+    path("allposts/<int:id>", views.postId, name="postbyId")
 ]

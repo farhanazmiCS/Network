@@ -22,16 +22,18 @@
 
         <div id="postsAll" class="container">
         {% for post in page %}
-            <h5>{{ post.op }}</h5>
-            <p>{{ post.post }}</p>
-            <p>{{ post.timestamp }}</p>
-            <div class="total-likes">
-                <i id="like" class="far fa-thumbs-up"></i> {{ post.totalLikes }}
+            <div id="{{ post.id }}"class="post-element">
+                <h5>{{ post.op }}</h5>
+                <p>{{ post.post }}</p>
+                <p>{{ post.timestamp }}</p>
+                <div class="total-likes">
+                    <i id="like-{{ post.id }}" class="far fa-thumbs-up"></i> {{ post.totalLikes }}
+                </div>
+                <div class="comment">
+                    <i class="fas fa-comment"></i> Comment
+                </div>
+                <hr>
             </div>
-            <div class="comment">
-                <i class="fas fa-comment"></i> Comment
-            </div>
-            <hr>
         {% endfor %}
         </div>
 
@@ -45,7 +47,7 @@
                 </li>
                 <li class="page-item">
                     <a class="page-link" href="{% url 'index' %}?page={{ page.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&#60;</span>
+                        <span aria-hidden="true">&#60; Prev</span>
                     </a>
                 </li>
                 <li class="page-item"><a id="current-page" class="page-link" href="{% url 'index' %}?page={{ page.previous_page_number }}">{{ page_num_before }}</a></li>
@@ -57,7 +59,7 @@
                 <li class="page-item"><a id="current-page" class="page-link" href="{% url 'index' %}?page={{ page.next_page_number }}">{{ page_num_after }}</a></li>
                 <li class="page-item">
                     <a class="page-link" href="{% url 'index' %}?page={{ page.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&#62;</span>
+                        <span aria-hidden="true">Next &#62;</span>
                     </a>
                 </li>
                 <li class="page-item">

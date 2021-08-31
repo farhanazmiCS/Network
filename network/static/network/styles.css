@@ -4,7 +4,8 @@ body {
 }
 
 #make-new-post {
-    margin: 10px;
+    margin: 0 auto;
+    margin-top: 10px;
 }
 .all {
     margin-top: 10%;

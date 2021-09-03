@@ -1,4 +1,5 @@
 import json, requests
+from django.db.models.expressions import OrderBy
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.db.models.fields import DateField
@@ -7,10 +8,13 @@ from django.http.response import HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+
 
 from . import registrationform
 
-from .models import User, Post, Comment
+from .models import User, Post, Comment, Like
 
 def login_view(request):
     if request.method == "POST":
@@ -65,12 +69,12 @@ def register(request):
         return render(request, "network/register.html", {
             'form': form
         })
-    
+
 def index(request):
     fetch = requests.get('http://127.0.0.1:10000/allposts')
     posts = fetch.content
     # Decodes the JSON (Works on list of json objects too!)
-    json_data = json.loads(posts)
+    json_data = json.loads(posts) 
     # Takes json_data and separates them to pages of 5
     p = Paginator(json_data, 10)
     # Gets the page number from the url. If user inputs a page that doesn't exist, set to 1.
@@ -106,6 +110,8 @@ def post(request):
             return HttpResponseNotFound("Error. Did not manage to make post.")
         return HttpResponseRedirect(reverse('index'))
 
+@csrf_exempt
+@login_required
 def postId(request, id):
     try:
         post = Post.objects.get(id=id)
@@ -115,25 +121,38 @@ def postId(request, id):
     if request.method == 'GET':
         return JsonResponse(post.serialize())
 
-    # PUT request method used to amend the data for liking a post
-    elif request.method == 'PUT':
+@csrf_exempt
+@login_required
+def placeholder():
+    pass
+
+@csrf_exempt
+def like(request, post_id):
+    # Filter by posts
+    try:
+        likes = Like.objects.filter(post=post_id)
+    except Like.DoesNotExist:
+        return JsonResponse({
+            'error': 'No likes for this post.'
+        }) 
+    
+    if request.method == 'GET':
+        return JsonResponse([like.serialize() for like in likes], safe=False)
+
+    if request.method == 'POST':
         data = json.loads(request.body)
-        if data.get('isLiked') == 'false':
-            # If a PUT request is requested and data shows that post is not liked, add 1 to like count
-            post.likes = int(data['likes']) + 1
-            # Add the current logged on user to the list
-            likedBy = data['likedBy']
-            likedBy.append(request.user)
-            post.likedBy = likedBy
-        elif data.get('isLiked') == 'true':
-            # If a PUT request is requested and data shows that post is liked, subtract 1 from like count
-            post.likes = int(data['likes']) - 1
-            # Remove the current logged on user from the list
-            likedBy = data['likedBy']
-            likedBy.remove(request.user)
-            post.likedBy = likedBy
-        # Set the value of database to value in JSON
-        post.isLiked = data['isLiked']
-        # Save to database
-        post.save()
+        liker = request.user
+        id_post = data.get("post", "")
+        like = Like(liker=liker, post_id=id_post)
+        like.save()
         return HttpResponse(status=200)
+
+    if request.method == 'DELETE':
+        data = json.loads(request.body)
+        liker = request.user
+        id_post = data.get("post", "")
+        Like.objects.filter(liker=liker, post_id=id_post).delete()
+        return HttpResponse(status=200)
+
+
+            

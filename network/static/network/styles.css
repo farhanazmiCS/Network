@@ -86,3 +86,12 @@ a {
 .tab:hover {
     color: lightblue;
 }
+
+.like-count {
+    display: inline-block;
+    margin-right: 15px;
+}
+
+.comment-count {
+    display: inline-block;
+}

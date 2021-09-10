@@ -27,9 +27,28 @@
                 <p>{{ post.post }}</p>
                 <p>{{ post.timestamp }}</p>
                 <div class="total-likes-{{ post.id }}">
-                    <i id="like-{{ post.id }}" class="far fa-thumbs-up"></i> {{ post.totalLikes }}
+                    <i id="like-{{ post.id }}" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-{{ post.id }}"></h5>
+                    <i id="comment-{{ post.id }}" class="fas fa-comment"></i> <h5 class="comment-count" id="comment-count-{{ post.id }}"></h5>
                 </div>
                 <hr>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-{{ post.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div id="modal-content-{{ post.id }}" class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title-{{ post.id }}" id="staticBackdropLabel"></h5>
+                            <button id="btn-close-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div id="modal-footer-{{ post.id }}" class="modal-footer">
+                            <div class="input-group mb-3">
+                                <input type="text" id="comment-field-{{ post.id }}" class="form-control" placeholder="Your Comment" aria-label="Recipient's username" aria-describedby="button-addon2">
+                                <button id="comment-post-{{ post.id }}" class="btn btn-primary" type="button" id="button-addon2">Comment</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         {% endfor %}
         </div>
@@ -91,6 +110,8 @@
         </div>
 
     </div>
+
+    
 {% endblock %}
 
 {% block script %}

@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.db.models.fields import DateField
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.http.response import HttpResponseForbidden, HttpResponseNotFound
+from django.http.response import HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -71,7 +71,10 @@ def register(request):
         })
 
 def index(request):
-    fetch = requests.get('http://127.0.0.1:10000/allposts')
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse(login_view))
+
+    fetch = requests.get('http://127.0.0.1:9000/allposts')
     posts = fetch.content
     # Decodes the JSON (Works on list of json objects too!)
     json_data = json.loads(posts) 
@@ -126,6 +129,7 @@ def postId(request, id):
 def placeholder():
     pass
 
+
 @csrf_exempt
 def like(request, post_id):
     # Filter by posts
@@ -140,18 +144,39 @@ def like(request, post_id):
         return JsonResponse([like.serialize() for like in likes], safe=False)
 
     if request.method == 'POST':
-        data = json.loads(request.body)
         liker = request.user
-        id_post = data.get("post", "")
-        like = Like(liker=liker, post_id=id_post)
+        like = Like(liker=liker, post_id=post_id)
         like.save()
         return HttpResponse(status=200)
 
     if request.method == 'DELETE':
-        data = json.loads(request.body)
         liker = request.user
-        id_post = data.get("post", "")
-        Like.objects.filter(liker=liker, post_id=id_post).delete()
+        Like.objects.filter(liker=liker, post_id=post_id).delete()
+        return HttpResponse(status=200)
+
+@csrf_exempt
+def comment(request, post_id):
+    try:
+        comments = Comment.objects.filter(post=post_id)
+    except Comment.DoesNotExist:
+        return JsonResponse({
+            'error': 'No comments.'
+        })
+    
+    if request.method == 'GET':
+        return JsonResponse([comment.serialize() for comment in comments], safe=False)
+    
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        commenter = request.user
+        comment = data.get('comment')
+        com = Comment(commenter=commenter, comment=comment, post_id=post_id)
+        com.save()
+        return HttpResponse(status=200)
+    
+    if request.method == 'DELETE':
+        commenter = request.user
+        Comment.objects.filter(commenter=commenter, post_id=post_id).delete()
         return HttpResponse(status=200)
 
 

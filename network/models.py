@@ -23,8 +23,19 @@ class Post(models.Model):
         }
 
 class Comment(models.Model):
-    commenter = models.ForeignKey(User, on_delete=models.CASCADE)
+    commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commenter")
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    comment = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "commenter": self.commenter.username,
+            "post": self.post_id,
+            "comment": self.comment,
+            "timestamp":  self.timestamp.strftime("%b %d %Y, %I:%M %p")
+        }
 
 class Like(models.Model):
     liker = models.ForeignKey(User, on_delete=models.CASCADE)

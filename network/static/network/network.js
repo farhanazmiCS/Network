@@ -51,6 +51,9 @@ function fetch_all_posts() {
         .then(response => response.json())
         .then(comments => {
 
+            // Hide 'no comments'
+            document.querySelector(`#modal-body-empty-${ element.id }`).style.display = 'none';
+
             // Number of comments
             let commentNum = comments.length;
             let commentsNumField = document.querySelector(`#comment-count-${ element.id }`);
@@ -62,8 +65,8 @@ function fetch_all_posts() {
             toComment.setAttribute('data-bs-target', `#modal-${ element.id }`);
             toComment.addEventListener('click', () => {
 
-                if (document.querySelector(`.modal-body-${element.id}`) != null) {
-                    document.querySelector(`.modal-body-${element.id}`).style.display = 'block';
+                if (document.querySelector(`#modal-body-${element.id}`) != null) {
+                    document.querySelector(`#modal-body-${element.id}`).style.display = 'block';
                 }
                 else {
                     viewComment(element);
@@ -131,14 +134,7 @@ function viewComment(element) {
     .then(response => response.json())
     .then(comments => {
         if (comments.length == 0) {
-            let body = document.createElement('div');
-            body.className = `modal-body-${ element.id }`;
-            body.innerHTML = '<h5>No comments :/</h5>';
-
-            let referenceNode = document.querySelector(`#modal-footer-${element.id}`);
-            let parent = document.querySelector(`#modal-content-${element.id}`);
-
-            parent.insertBefore(body, referenceNode);
+            document.querySelector(`#modal-body-empty-${ element.id }`).style.display = 'block';
         }
         else {
             comments.forEach(eachComment);
@@ -148,7 +144,7 @@ function viewComment(element) {
     function eachComment(element) {
 
         let body = document.createElement('div');
-        body.className = `modal-body-${ element.post }`;
+        body.id = `modal-body-${ element.post }`;
 
         let commenterElement = document.createElement('h5');
         commenterElement.className = 'commenter';
@@ -167,10 +163,8 @@ function viewComment(element) {
         body.appendChild(commenterElement);
         body.appendChild(breakline);
 
-        let referenceNode = document.querySelector(`#modal-footer-${element.post}`);
-
-        let parent = document.querySelector(`#modal-content-${element.post}`);
-        parent.insertBefore(body, referenceNode);
+        let parent = document.querySelector(`#modal-body-parent-${element.post}`);
+        parent.appendChild(body);
     }
 
     // Post Comment

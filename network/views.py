@@ -137,7 +137,7 @@ def like(request, post_id):
         likes = Like.objects.filter(post=post_id)
     except Like.DoesNotExist:
         return JsonResponse({
-            'error': 'No likes for this post.'
+            'Empty QuerySet': 'No likes for this post.'
         }) 
     
     if request.method == 'GET':
@@ -160,7 +160,7 @@ def comment(request, post_id):
         comments = Comment.objects.filter(post=post_id)
     except Comment.DoesNotExist:
         return JsonResponse({
-            'error': 'No comments.'
+            'Empty QuerySet': 'No comments.'
         })
     
     if request.method == 'GET':
@@ -170,6 +170,9 @@ def comment(request, post_id):
         data = json.loads(request.body)
         commenter = request.user
         comment = data.get('comment')
+        # Do not allow comment field to be left blank
+        if comment == '':
+            return HttpResponseRedirect(reverse('index'))
         com = Comment(commenter=commenter, comment=comment, post_id=post_id)
         com.save()
         return HttpResponse(status=200)

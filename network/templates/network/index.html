@@ -41,6 +41,11 @@
                             <h5 class="modal-title-{{ post.id }}" id="staticBackdropLabel"></h5>
                             <button id="btn-close-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
+                        <div class="modal-body" id="modal-body-parent-{{ post.id }}">
+                            <div id="modal-body-empty-{{ post.id }}">
+                                No comments :/
+                            </div>
+                        </div>
                         <div id="modal-footer-{{ post.id }}" class="modal-footer">
                             <div class="input-group mb-3">
                                 <input type="text" id="comment-field-{{ post.id }}" class="form-control" placeholder="Your Comment" aria-label="Recipient's username" aria-describedby="button-addon2">

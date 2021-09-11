@@ -95,3 +95,12 @@ a {
 .comment-count {
     display: inline-block;
 }
+
+.edit {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.edit:hover {
+    color: #037ffc;
+}

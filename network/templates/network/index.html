@@ -29,11 +29,14 @@
                 <div class="total-likes-{{ post.id }}">
                     <i id="like-{{ post.id }}" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-{{ post.id }}"></h5>
                     <i id="comment-{{ post.id }}" class="fas fa-comment"></i> <h5 class="comment-count" id="comment-count-{{ post.id }}"></h5>
+                    {% if post.op == user.username %}
+                        <h5 id="edit-{{ post.id }}" class="edit">Edit</h5>
+                    {% endif %}
                 </div>
                 <hr>
             </div>
 
-            <!-- Modal -->
+            <!-- Modal for Comments -->
             <div class="modal fade" id="modal-{{ post.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div id="modal-content-{{ post.id }}" class="modal-content">
@@ -55,6 +58,30 @@
                     </div>
                 </div>
             </div>
+
+            {% if post.op == user.username %}
+            <!-- Modal for Editing Posts -->
+            <div class="modal fade" id="modal-edit-{{ post.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div id="modal-content-edit-{{ post.id }}" class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title-edit-{{ post.id }}" id="staticBackdropLabel">Edit your post</h5>
+                            <button id="btn-close-edit-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="modal-body-parent-edit-{{ post.id }}">
+                            <div class="mb-3">
+                                <textarea autofocus class="form-control" id="edit-field-{{ post.id }}" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div id="modal-footer-edit-{{ post.id }}" class="modal-footer">
+                            <div class="d-grid gap-2">
+                                <button id="edit-post-button-{{ post.id }}" class="btn btn-primary" type="button">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         {% endfor %}
         </div>
 

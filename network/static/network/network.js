@@ -47,6 +47,7 @@ function fetch_all_posts() {
             likeCount.innerHTML = `${likeNum}`;
         })
 
+        // Fetches comments of the post and its count
         fetch(`/comments/${element.id}`)
         .then(response => response.json())
         .then(comments => {
@@ -73,6 +74,15 @@ function fetch_all_posts() {
                 }
             })
         })
+
+        // Edit comment
+        if (document.querySelector(`#edit-${element.id}`) != null) {
+            let editButton = document.querySelector(`#edit-${element.id}`)
+            editButton.setAttribute('data-bs-toggle', 'modal');
+            editButton.setAttribute('data-bs-target', `#modal-edit-${element.id}`);
+            editButton.addEventListener('click', () => editPost(element));
+        }
+        
     }
 }
 
@@ -185,4 +195,31 @@ function postComment(id) {
         })
     })
     document.querySelector(`#comment-field-${id}`).value = '';
+}
+
+function editPost(element) {
+    // Firstly, fetch the post's content
+    fetch(`allposts/${element.id}`)
+    .then(response => response.json())
+    .then(post => {
+        let content = post.post;
+        let editField = document.querySelector(`#edit-field-${post.id}`);
+        editField.innerHTML = content;
+    })
+
+    let submitButton = document.querySelector(`#edit-post-button-${element.id}`);
+
+    submitButton.addEventListener('click', () => {
+        // Then, take the edit field and post the data
+        fetch(`allposts/${element.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({
+                post: document.querySelector(`#edit-field-${element.id}`).value
+            })
+        })
+        location.reload();
+    })
 }

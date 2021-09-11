@@ -103,6 +103,7 @@ def post(request):
         except Post.DoesNotExist:
             return HttpResponseNotFound("Your feed is empty.")
         return JsonResponse([objects.serialize() for objects in allPosts], safe=False)
+
     elif request.method == 'POST':
         try:
             # Get post information
@@ -124,6 +125,13 @@ def postId(request, id):
     if request.method == 'GET':
         return JsonResponse(post.serialize())
 
+    elif request.method == 'PUT':
+        postData = json.loads(request.body)
+        post.post = postData['post']
+        post.save()
+        return HttpResponse(status=200)
+
+
 @csrf_exempt
 @login_required
 def placeholder():
@@ -143,13 +151,13 @@ def like(request, post_id):
     if request.method == 'GET':
         return JsonResponse([like.serialize() for like in likes], safe=False)
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         liker = request.user
         like = Like(liker=liker, post_id=post_id)
         like.save()
         return HttpResponse(status=200)
 
-    if request.method == 'DELETE':
+    elif request.method == 'DELETE':
         liker = request.user
         Like.objects.filter(liker=liker, post_id=post_id).delete()
         return HttpResponse(status=200)
@@ -166,7 +174,7 @@ def comment(request, post_id):
     if request.method == 'GET':
         return JsonResponse([comment.serialize() for comment in comments], safe=False)
     
-    if request.method == 'POST':
+    elif request.method == 'POST':
         data = json.loads(request.body)
         commenter = request.user
         comment = data.get('comment')
@@ -177,7 +185,7 @@ def comment(request, post_id):
         com.save()
         return HttpResponse(status=200)
     
-    if request.method == 'DELETE':
+    elif request.method == 'DELETE':
         commenter = request.user
         Comment.objects.filter(commenter=commenter, post_id=post_id).delete()
         return HttpResponse(status=200)

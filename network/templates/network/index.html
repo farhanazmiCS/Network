@@ -33,19 +33,18 @@
         </div>
     </div>
 
-    <!-- Toggles between 'allposts' and 'following' -->
-    <div id="feed-tab">
-        <button id="all" class="tab">Popular</button> |
-        <button id="following" class="tab">Following</button>
+    <!-- Header -->
+    <div class="container" id="header-feed">
+        <h2>All Posts</h2>
     </div>
 
     <!-- Displays all the posts -->
     <div id="postsAll" class="container">
         {% for post in page %}
             <div id="{{ post.id }}"class="post-element">
-                <h5>{{ post.op }}</h5>
+                <h4>{{ post.op }}</h4>
                 <p>{{ post.post }}</p>
-                <p>{{ post.timestamp }}</p>
+                <p class="timestamp">Posted on {{ post.timestamp }}</p>
                 <div class="total-likes-{{ post.id }}">
                     <i id="like-{{ post.id }}" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-{{ post.id }}"></h5>
                     <i id="comment-{{ post.id }}" class="fas fa-comment"></i> <h5 class="comment-count" id="comment-count-{{ post.id }}"></h5>
@@ -85,7 +84,7 @@
                     <div class="modal-dialog modal-dialog-scrollable">
                         <div id="modal-content-edit-{{ post.id }}" class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title-edit-{{ post.id }}" id="staticBackdropLabel">Edit your post</h5>
+                                <h5 class="modal-title-edit-{{ post.id }}" id="staticBackdropLabel">Edit Post</h5>
                                 <button id="btn-close-edit-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body" id="modal-body-parent-edit-{{ post.id }}">

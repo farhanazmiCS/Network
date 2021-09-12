@@ -1,4 +1,4 @@
-// FOR CSRF TOKEN
+// FOR CSRF TOKEN: src: https://docs.djangoproject.com/en/3.2/ref/csrf/
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -19,8 +19,6 @@ const csrftoken = getCookie('csrftoken');
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#all-posts').addEventListener('click', display_all_feed);
-    document.querySelector('#all').addEventListener('click', display_all_feed);
-    document.querySelector('#following').addEventListener('click', display_following_feed);
     
     // By default load all posts
     display_all_feed();
@@ -28,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function display_all_feed() {
+
+    document.querySelector('#all-posts').style.color = 'white';
 
     fetch_all_posts();
 
@@ -72,6 +72,9 @@ function fetch_all_posts() {
             let likeCount = document.querySelector(`#like-count-${element.id}`)
             likeCount.innerHTML = `${likeNum}`;
         })
+        .catch(error => {
+            console.log(error);
+        })
 
         // Fetches comments of the post and its count
         fetch(`/comments/${element.id}`)
@@ -99,6 +102,9 @@ function fetch_all_posts() {
                     viewComment(element);
                 }
             })
+        })
+        .catch(error => {
+            console.log(error);
         })
 
         // Edit comment
@@ -178,6 +184,9 @@ function viewComment(element) {
             comments.forEach(eachComment);
         }
     })
+    .catch(error => {
+        console.log(error);
+    })
 
     function eachComment(element) {
 
@@ -234,6 +243,9 @@ function editPost(element) {
         let content = post.post;
         let editField = document.querySelector(`#edit-field-${post.id}`);
         editField.innerHTML = content;
+    })
+    .catch(error => {
+        console.log(error);
     })
 
     let submitButton = document.querySelector(`#edit-post-button-${element.id}`);

@@ -17,9 +17,6 @@
         <div class="square">
             <form action="{% url 'register' %}" method="post">
                 {% csrf_token %}
-                <div class="profilepicdiv">
-                    <img id="profilepic" class="rounded-circle">
-                </div>
                 <div class="input-group mb-0">
                     {{ form.Register.username }}
                 </div>
@@ -37,7 +34,7 @@
                 </div>
             </form>
 
-            <p>Already have an account? <a href="{% url 'login' %}">Log In here.</a></p>
+            <p class="already">Already have an account? <a href="{% url 'login' %}">Log In here.</a></p>
         </div>
     </div>
 {% endblock %}

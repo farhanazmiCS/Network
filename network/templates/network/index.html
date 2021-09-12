@@ -3,24 +3,45 @@
 
 {% block body %}
 
-    <div id="newsfeed-all">
-        <div id="make-new-post" class="container">
-            <form id="new-post" method="post" action="/allposts">
-                {% csrf_token %}
-                <div class="textarea">
-                    <textarea class="form-control" id="text" name="textfield" rows="3" required></textarea>
-                </div>
-                <div id="submit" class="d-grid gap-2">
-                    <button class="btn btn-primary" type="submit">Post</button>
-                </div>
-            </form>
+    <!-- Trigger 'Create Post' Modal -->
+    <div id="make-new-post" class="container">
+        <div class="input-group flex-nowrap">
+            <input id="post-placeholder-field" type="text" class="form-control" placeholder="What's on your mind?" aria-label="Post" aria-describedby="addon-wrapping" data-bs-toggle="modal" data-bs-target="#new-post" disabled>
         </div>
-        <div id="feed-tab">
-            <button id="all1" class="tab">Popular</button> |
-            <button id="following1" class="tab">Following</button>
-        </div>
+    </div>
 
-        <div id="postsAll" class="container">
+    <!-- Create Post Modal -->
+    <div class="modal fade" id="new-post" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-post" method="post" action="/allposts">
+                        {% csrf_token %}
+                        <div class="textarea">
+                            <textarea class="form-control" id="text" name="textfield" rows="3" required></textarea>
+                        </div>
+                        <div id="submit" class="d-grid gap-2">
+                            <button class="btn btn-primary" type="submit">Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Toggles between 'allposts' and 'following' -->
+    <div id="feed-tab">
+        <button id="all1" class="tab">Popular</button> |
+        <button id="following1" class="tab">Following</button>
+    </div>
+
+    <!-- Displays all the posts -->
+    <div id="postsAll" class="container">
         {% for post in page %}
             <div id="{{ post.id }}"class="post-element">
                 <h5>{{ post.op }}</h5>
@@ -60,32 +81,37 @@
             </div>
 
             {% if post.op == user.username %}
-            <!-- Modal for Editing Posts -->
-            <div class="modal fade" id="modal-edit-{{ post.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-scrollable">
-                    <div id="modal-content-edit-{{ post.id }}" class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title-edit-{{ post.id }}" id="staticBackdropLabel">Edit your post</h5>
-                            <button id="btn-close-edit-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body" id="modal-body-parent-edit-{{ post.id }}">
-                            <div class="mb-3">
-                                <textarea autofocus class="form-control" id="edit-field-{{ post.id }}" rows="3"></textarea>
+                <!-- Modal for Editing Posts -->
+                <div class="modal fade" id="modal-edit-{{ post.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable">
+                        <div id="modal-content-edit-{{ post.id }}" class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title-edit-{{ post.id }}" id="staticBackdropLabel">Edit your post</h5>
+                                <button id="btn-close-edit-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                        </div>
-                        <div id="modal-footer-edit-{{ post.id }}" class="modal-footer">
-                            <div class="d-grid gap-2">
-                                <button id="edit-post-button-{{ post.id }}" class="btn btn-primary" type="button">Edit</button>
+                            <div class="modal-body" id="modal-body-parent-edit-{{ post.id }}">
+                                <div class="mb-3">
+                                    <textarea autofocus class="form-control" id="edit-field-{{ post.id }}" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div id="modal-footer-edit-{{ post.id }}" class="modal-footer">
+                                <div class="d-grid gap-2">
+                                    <button id="edit-post-button-{{ post.id }}" class="btn btn-primary" type="button">Edit</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
             {% endif %}
         {% endfor %}
         </div>
 
-        <nav id="pagination" aria-label="Page navigation">
+    <!-- Displays the posts posted by the user's 'following' -->
+    <div id="postsFollowing" class="container">
+    </div>
+
+    <!-- Page numbers -->
+    <nav id="pagination" aria-label="Page navigation">
             <ul class="pagination">
                 {% if page.has_previous %}
                 <li class="page-item">
@@ -116,33 +142,8 @@
                     </a>
                 </li>
                 {% endif %}
-
             </ul>
         </nav>
-    </div>
-    <div id="newsfeed-following">
-        <div id="make-new-post" class="container">
-            <form id="new-post" method="post" action="/posts">
-                {% csrf_token %}
-                <div class="textarea">
-                    <textarea class="form-control" id="text" name="textfield" rows="3"></textarea>
-                </div>
-                <div id="submit" class="d-grid gap-2">
-                    <button class="btn btn-primary" type="submit">Post</button>
-                </div>
-            </form>
-        </div>
-
-        <div id="feed-tab">
-            <button id="all2" class="tab">Popular</button> | 
-            <button id="following2" class="tab">Following</button>
-        </div>
-
-        <div id="postsFollowing" class="container">
-        </div>
-
-    </div>
-
     
 {% endblock %}
 

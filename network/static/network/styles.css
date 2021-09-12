@@ -6,7 +6,17 @@ body {
 #make-new-post {
     margin: 0 auto;
     margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 25px;
+    border-radius: 7px;
+    background-color: #fcfcfc;
+    box-shadow: 0px 0px 4px 1px #dedede;
 }
+
+#post-placeholder-field {
+    background-color: white;
+}
+
 .all {
     margin-top: 10%;
 }
@@ -103,4 +113,9 @@ a {
 
 .edit:hover {
     color: #037ffc;
+}
+
+
+#text {
+    margin-bottom: 10px;
 }

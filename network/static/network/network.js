@@ -10,8 +10,8 @@ function display_feed() {
 
     fetch_all_posts();
 
-    document.querySelector('#newsfeed-all').style.display = 'block';
-    document.querySelector('#newsfeed-following').style.display = 'none';
+    document.querySelector('#postsAll').style.display = 'block';
+    document.querySelector('#postsFollowing').style.display = 'none';
 }
 
 
@@ -194,7 +194,6 @@ function postComment(id) {
             post: id
         })
     })
-    document.querySelector(`#comment-field-${id}`).value = '';
 }
 
 function editPost(element) {

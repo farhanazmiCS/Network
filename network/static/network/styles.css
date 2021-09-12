@@ -147,3 +147,7 @@ a {
     font-size: 14px;
     color: gray;
 }
+
+textarea {
+    resize: none;
+}

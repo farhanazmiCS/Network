@@ -253,22 +253,36 @@ function editPost(element) {
     .catch(error => {
         console.log(error);
     })
-
     let submitButton = document.querySelector(`#edit-post-button-${element.id}`);
-
     submitButton.addEventListener('click', () => {
         let request = new Request(
             `/allposts/${element.id}`,
             {headers: {'X-CSRFToken': csrftoken}}
         );
-        // Then, take the edit field and post the data
-        fetch(request, {
-            method: 'PUT',
-            mode: 'same-origin',
-            body: JSON.stringify({
-                post: document.querySelector(`#edit-field-${element.id}`).value
+        let post = document.querySelector(`#edit-field-${element.id}`).value;
+        // Prevent empty edits
+        if (post === '') {
+            let originalContent = document.querySelector(`#post-content-${element.id}`).innerText;
+            // If field is empty, set it to what the user has posted initially.
+            fetch(request, {
+                method: 'PUT',
+                mode: 'same-origin',
+                body: JSON.stringify({
+                    post: originalContent
+                })
             })
-        })
-        location.reload();
+            location.reload();
+        }
+        else {
+            // Then, take the edit field and post the data
+            fetch(request, {
+                method: 'PUT',
+                mode: 'same-origin',
+                body: JSON.stringify({
+                    post: document.querySelector(`#edit-field-${element.id}`).value
+                })
+            })
+            location.reload();
+        }
     })
 }

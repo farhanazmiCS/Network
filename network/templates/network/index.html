@@ -42,8 +42,8 @@
     <div id="postsAll" class="container">
         {% for post in page %}
             <div id="{{ post.id }}"class="post-element">
-                <h4>{{ post.op }}</h4>
-                <p>{{ post.post }}</p>
+                <h4 id="post-original-poster-{{ post.id }}">{{ post.op }}</h4>
+                <p id="post-content-{{ post.id }}">{{ post.post }}</p>
                 <p class="timestamp">Posted on {{ post.timestamp }}</p>
                 <div class="total-likes-{{ post.id }}">
                     <i id="like-{{ post.id }}" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-{{ post.id }}"></h5>
@@ -89,7 +89,7 @@
                             </div>
                             <div class="modal-body" id="modal-body-parent-edit-{{ post.id }}">
                                 <div class="mb-3">
-                                    <textarea autofocus class="form-control" id="edit-field-{{ post.id }}" rows="3"></textarea>
+                                    <textarea class="form-control" id="edit-field-{{ post.id }}" rows="3"></textarea>
                                 </div>
                                 <div class="d-grid gap-2">
                                     <button id="edit-post-button-{{ post.id }}" class="btn btn-primary" type="button">Edit</button>
@@ -117,7 +117,7 @@
                 </li>
                 <li class="page-item">
                     <a class="page-link" href="{% url 'index' %}?page={{ page.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&#60; Prev</span>
+                        <span aria-hidden="true">&#8249; Prev</span>
                     </a>
                 </li>
                 <li class="page-item"><a id="current-page" class="page-link" href="{% url 'index' %}?page={{ page.previous_page_number }}">{{ page_num_before }}</a></li>
@@ -129,7 +129,7 @@
                 <li class="page-item"><a id="current-page" class="page-link" href="{% url 'index' %}?page={{ page.next_page_number }}">{{ page_num_after }}</a></li>
                 <li class="page-item">
                     <a class="page-link" href="{% url 'index' %}?page={{ page.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">Next &#62;</span>
+                        <span aria-hidden="true">Next &#8250;</span>
                     </a>
                 </li>
                 <li class="page-item">

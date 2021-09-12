@@ -42,13 +42,14 @@
 }
 
 p {
-    padding-top: 10px;
+    margin-bottom: 7px;
     font-size: 20px;
 }
 
 .timestamp {
     color: gray;
     font-size: 16px;
+    padding-bottom: 3px;
 }
 
 .square {
@@ -124,6 +125,21 @@ a {
 }
 
 .already {
+    padding-top: 15px;
     text-align: center;
     padding-bottom: 10px;
+}
+
+.commenter-ele {
+    margin-bottom: 0px;
+}
+
+.comment-ele {
+    font-size: 18px;
+    margin-bottom: 0px;
+}
+
+.timestamp-ele {
+    font-size: 14px;
+    color: gray;
 }

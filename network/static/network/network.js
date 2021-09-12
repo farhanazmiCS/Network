@@ -194,20 +194,26 @@ function viewComment(element) {
         body.id = `modal-body-${ element.post }`;
 
         let commenterElement = document.createElement('h5');
-        commenterElement.className = 'commenter';
+        commenterElement.className = 'commenter-ele';
         let commenter = document.createTextNode(`${element.commenter}`);
         commenterElement.appendChild(commenter);
 
         let commentElement = document.createElement('p');
-        commentElement.className = 'comment';
+        commentElement.className = 'comment-ele';
         let comment = document.createTextNode(`${element.comment}`);
         commentElement.appendChild(comment);
+
+        let timestampElement = document.createElement('p');
+        timestampElement.className = 'timestamp-ele';
+        let timestamp = document.createTextNode(`${element.timestamp}`);
+        timestampElement.appendChild(timestamp);
 
         let breakline = document.createElement('hr');
         breakline.className = 'breakline-comment';
 
-        body.appendChild(commentElement);
         body.appendChild(commenterElement);
+        body.appendChild(commentElement);
+        body.appendChild(timestampElement);
         body.appendChild(breakline);
 
         let parent = document.querySelector(`#modal-body-parent-${element.post}`);

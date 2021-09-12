@@ -15,14 +15,14 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">New Post</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="exampleModalLabel" style="margin-bottom: 0px;">New Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="margin-bottom: 0px;"></button>
                 </div>
                 <div class="modal-body">
                     <form id="new-post" method="post" action="/allposts">
                         {% csrf_token %}
                         <div class="textarea">
-                            <textarea class="form-control" id="text" name="textfield" rows="3" required></textarea>
+                            <textarea class="form-control" id="text" name="textfield" rows="3" placeholder="What's on your mind?" required></textarea>
                         </div>
                         <div id="submit" class="d-grid gap-2">
                             <button class="btn btn-primary" type="submit">Post</button>
@@ -60,8 +60,8 @@
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div id="modal-content-{{ post.id }}" class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title-{{ post.id }}" id="staticBackdropLabel"></h5>
-                            <button id="btn-close-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <h5 class="modal-title-{{ post.id }}" id="staticBackdropLabel" style="margin-bottom: 0px;"></h5>
+                            <button id="btn-close-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="margin-bottom: 0px;"></button>
                         </div>
                         <div class="modal-body" id="modal-body-parent-{{ post.id }}">
                             <div id="modal-body-empty-{{ post.id }}">
@@ -69,7 +69,7 @@
                             </div>
                         </div>
                         <div id="modal-footer-{{ post.id }}" class="modal-footer">
-                            <div class="input-group mb-3">
+                            <div class="input-group mb-0">
                                 <input type="text" id="comment-field-{{ post.id }}" class="form-control" placeholder="Your Comment" aria-label="Recipient's username" aria-describedby="button-addon2">
                                 <button id="comment-post-{{ post.id }}" class="btn btn-primary" type="button" id="button-addon2">Comment</button>
                             </div>
@@ -84,8 +84,8 @@
                     <div class="modal-dialog modal-dialog-scrollable">
                         <div id="modal-content-edit-{{ post.id }}" class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title-edit-{{ post.id }}" id="staticBackdropLabel">Edit Post</h5>
-                                <button id="btn-close-edit-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <h5 class="modal-title-edit-{{ post.id }}" id="staticBackdropLabel" style="margin-bottom: 0px;">Edit Post</h5>
+                                <button id="btn-close-edit-{{ post.id }}"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="margin-bottom: 0px;"></button>
                             </div>
                             <div class="modal-body" id="modal-body-parent-edit-{{ post.id }}">
                                 <div class="mb-3">

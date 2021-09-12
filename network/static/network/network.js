@@ -1,17 +1,43 @@
+// FOR CSRF TOKEN
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+// Declare CSRF Token
+const csrftoken = getCookie('csrftoken');
+
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('#all-posts').addEventListener('click', display_feed);
+    document.querySelector('#all-posts').addEventListener('click', display_all_feed);
+    document.querySelector('#all').addEventListener('click', display_all_feed);
+    document.querySelector('#following').addEventListener('click', display_following_feed);
     
     // By default load all posts
-    display_feed();
+    display_all_feed();
 })
 
 
-function display_feed() {
+function display_all_feed() {
 
     fetch_all_posts();
 
     document.querySelector('#postsAll').style.display = 'block';
     document.querySelector('#postsFollowing').style.display = 'none';
+}
+
+function display_following_feed() {
+    document.querySelector('#postsAll').style.display = 'none';
+    document.querySelector('#postsFollowing').style.display = 'block';
 }
 
 
@@ -87,11 +113,13 @@ function fetch_all_posts() {
 }
 
 function likePost(id) {
-    fetch(`/likes/${id}`, {
+    let request = new Request(
+        `/likes/${id}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    fetch(request, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json' 
-        },
+        mode: 'same-origin',
         body: JSON.stringify({
             liker: document.querySelector('strong').innerText,
             post: id
@@ -110,11 +138,13 @@ function likePost(id) {
 
 
 function unlikePost(id) {
-    fetch(`/likes/${id}`, {
+    let request = new Request(
+        `/likes/${id}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    fetch(request, {
         method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json' 
-        },
+        mode: 'same-origin',
         body: JSON.stringify({
             liker: document.querySelector('strong').innerText,
             post: id
@@ -128,8 +158,6 @@ function unlikePost(id) {
     let likes = Number(query.innerText);
     likes = likes - 1;
     query.innerHTML = likes;
-
-    
 }
 
 
@@ -183,11 +211,13 @@ function viewComment(element) {
 
 
 function postComment(id) {
-    fetch(`/comments/${id}`, {
+    let request = new Request(
+        `/comments/${id}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    fetch(request, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json' 
-        },
+        mode: 'same-origin',
         body: JSON.stringify({
             commenter: document.querySelector('strong').innerText,
             comment: document.querySelector(`#comment-field-${id}`).value,
@@ -209,12 +239,14 @@ function editPost(element) {
     let submitButton = document.querySelector(`#edit-post-button-${element.id}`);
 
     submitButton.addEventListener('click', () => {
+        let request = new Request(
+            `/allposts/${element.id}`,
+            {headers: {'X-CSRFToken': csrftoken}}
+        );
         // Then, take the edit field and post the data
-        fetch(`allposts/${element.id}`, {
+        fetch(request, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json' 
-            },
+            mode: 'same-origin',
             body: JSON.stringify({
                 post: document.querySelector(`#edit-field-${element.id}`).value
             })

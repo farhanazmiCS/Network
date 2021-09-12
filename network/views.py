@@ -114,7 +114,6 @@ def post(request):
             return HttpResponseNotFound("Error. Did not manage to make post.")
         return HttpResponseRedirect(reverse('index'))
 
-@csrf_exempt
 @login_required
 def postId(request, id):
     try:
@@ -137,8 +136,7 @@ def postId(request, id):
 def placeholder():
     pass
 
-
-@csrf_exempt
+@login_required
 def like(request, post_id):
     # Filter by posts
     try:
@@ -162,7 +160,7 @@ def like(request, post_id):
         Like.objects.filter(liker=liker, post_id=post_id).delete()
         return HttpResponse(status=200)
 
-@csrf_exempt
+@login_required
 def comment(request, post_id):
     try:
         comments = Comment.objects.filter(post=post_id)

@@ -1,11 +1,6 @@
-body {
-    font-family: 'Jura', sans-serif;
-    font-weight: 700;
-}
-
 #make-new-post {
     margin: 0 auto;
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: 20px;
     padding: 25px;
     border-radius: 7px;
@@ -117,5 +112,5 @@ a {
 
 
 #text {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }

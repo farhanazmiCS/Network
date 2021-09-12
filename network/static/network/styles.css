@@ -1,3 +1,7 @@
+body {
+    font-family: 'Urbanist', sans-serif;
+}
+
 #make-new-post, #postsAll {
     margin: 0 auto;
     margin-top: 20px;

@@ -3,14 +3,22 @@ from django.db import models
 
 
 class User(AbstractUser):
-    # Every profile will have a many-to-many relationship with many other profiles
-    followers = models.ManyToManyField('User', related_name="fs")
-    following = models.ManyToManyField('User', related_name="fg")
-    profilePic = models.ImageField(blank=True)
+    followers = models.ManyToManyField('User', related_name='fwrs', null=True)
+    following = models.ManyToManyField('User', related_name='fwng', null=True)
+    follower_count = models.IntegerField(default=0)
+    following_count = models.IntegerField(default=0)
+
+    def serialize(self):
+        return {
+            "username": self.username,
+            "followers": [follower for follower in self.followers.all()],
+            "following": [following for following in self.following.all()],
+            "follower_count": len(self.followers.all()),
+            "following_count": len(self.following.all()),
+        }
 
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="loggedUser")
-    originalPoster = models.ForeignKey(User, on_delete=models.CASCADE)
+    originalPoster = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     post = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -34,7 +42,7 @@ class Comment(models.Model):
             "commenter": self.commenter.username,
             "post": self.post_id,
             "comment": self.comment,
-            "timestamp":  self.timestamp.strftime("%b %d %Y, %I:%M %p")
+            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p")
         }
 
 class Like(models.Model):

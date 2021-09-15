@@ -2,7 +2,7 @@ body {
     font-family: 'Urbanist', sans-serif;
 }
 
-#make-new-post, #postsAll {
+#make-new-post, #postsAll, #my-posts {
     margin: 0 auto;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -14,6 +14,11 @@ body {
 
 #header-feed {
     margin: 0 auto;
+}
+
+#data {
+    margin: auto;
+    text-align: center;
 }
 
 #post-placeholder-field {
@@ -150,4 +155,26 @@ a {
 
 textarea {
     resize: none;
+}
+
+#username-center {
+    margin-top: 50px;
+}
+
+#username-profile-child {
+    text-align: center;
+    font-weight: bold;
+}
+
+.title {
+    margin: 10px;
+    font-weight: bold;
+}
+
+.title-content {
+    margin: 10px;
+}
+
+.title-box {
+    display: inline-block;
 }

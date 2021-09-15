@@ -16,6 +16,7 @@ from . import registrationform
 
 from .models import User, Post, Comment, Like
 
+# Login Page
 def login_view(request):
     if request.method == "POST":
 
@@ -40,7 +41,7 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("login"))
 
-
+# Register Page
 def register(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -70,12 +71,18 @@ def register(request):
             'form': form
         })
 
+# Display All Posts via index.html
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse(login_view))
 
-    fetch = requests.get('http://127.0.0.1:9000/allposts')
-    posts = fetch.content
+    # Fetch data
+    try:
+        fetch = requests.get('http://127.0.0.1:9000/allposts')
+        posts = fetch.content
+    except:
+        return HttpResponse('An error occured.', status=500)
+
     # Decodes the JSON (Works on list of json objects too!)
     json_data = json.loads(posts) 
     # Takes json_data and separates them to pages of 5
@@ -95,6 +102,11 @@ def index(request):
         'last_page': last_page
     })
 
+@login_required
+def view_profile(request, username):
+    return render(request, 'network/profile.html')
+
+# API Route for Creating New Posts
 def post(request):
     if request.method == "GET":
         try:
@@ -109,11 +121,12 @@ def post(request):
             # Get post information
             postText = request.POST["textfield"]
             # Save post data into the database
-            Post(user=request.user, originalPoster=request.user, post=postText).save()
+            Post(originalPoster=request.user, post=postText).save()
         except:
             return HttpResponseNotFound("Error. Did not manage to make post.")
         return HttpResponseRedirect(reverse('index'))
-
+    
+# API Route for Editing Posts
 @login_required
 def postId(request, id):
     try:
@@ -130,12 +143,33 @@ def postId(request, id):
         post.save()
         return HttpResponse(status=200)
 
+@login_required
+def postUsername(request, username):
+    try:
+        # MODEL Related object reference. src: https://stackoverflow.com/questions/25153203/reverse-lookup-of-foreign-key-in-python-django
+        user = User.objects.get(username=username)
+        post_by_user = [post.serialize() for post in user.posts.all().order_by('-timestamp')]            
+    except Post.DoesNotExist:
+        return HttpResponseNotFound('No posts for this user.', status=204)
 
+    if request.method == 'GET':
+        return JsonResponse(post_by_user, safe=False)
+
+# API Route for Followers/Following
 @csrf_exempt
 @login_required
-def placeholder():
-    pass
+def profile(request, username):
+    if request.method == 'GET':
+        try:
+            get_profile = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({
+                'error': f'User of { username } does not exist.'
+            })
+        return JsonResponse(get_profile.serialize())
+    
 
+# API Route for Likes
 @login_required
 def like(request, post_id):
     # Filter by posts
@@ -160,6 +194,7 @@ def like(request, post_id):
         Like.objects.filter(liker=liker, post_id=post_id).delete()
         return HttpResponse(status=200)
 
+# API Route for Comments
 @login_required
 def comment(request, post_id):
     try:
@@ -182,11 +217,3 @@ def comment(request, post_id):
         com = Comment(commenter=commenter, comment=comment, post_id=post_id)
         com.save()
         return HttpResponse(status=200)
-    
-    elif request.method == 'DELETE':
-        commenter = request.user
-        Comment.objects.filter(commenter=commenter, post_id=post_id).delete()
-        return HttpResponse(status=200)
-
-
-            

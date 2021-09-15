@@ -18,7 +18,13 @@ function getCookie(name) {
 const csrftoken = getCookie('csrftoken');
 
 document.addEventListener('DOMContentLoaded', () => {
+    // For all posts
     document.querySelector('#all-posts').addEventListener('click', display_all_feed);
+
+    // Set href
+    let view_profile = document.querySelector('#view-profile');
+    let username = document.querySelector('strong').innerText;
+    view_profile.href = `/viewprofile/${username}`;
     
     // By default load all posts
     display_all_feed();
@@ -45,7 +51,7 @@ function fetch_all_posts() {
     fetch('/allposts')
     .then(response => response.json())
     .then(post => {
-        post.forEach(eachPost)
+        post.forEach(eachPost);
     })
 
     function eachPost(element) {
@@ -239,11 +245,12 @@ function postComment(id) {
             post: id
         })
     })
+    location.reload();
 }
 
 function editPost(element) {
     // Firstly, fetch the post's content
-    fetch(`allposts/${element.id}`)
+    fetch(`post/${element.id}`)
     .then(response => response.json())
     .then(post => {
         let content = post.post;
@@ -256,7 +263,7 @@ function editPost(element) {
     let submitButton = document.querySelector(`#edit-post-button-${element.id}`);
     submitButton.addEventListener('click', () => {
         let request = new Request(
-            `/allposts/${element.id}`,
+            `/post/${element.id}`,
             {headers: {'X-CSRFToken': csrftoken}}
         );
         let post = document.querySelector(`#edit-field-${element.id}`).value;
@@ -286,3 +293,4 @@ function editPost(element) {
         }
     })
 }
+

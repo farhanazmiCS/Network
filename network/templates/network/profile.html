@@ -2,9 +2,35 @@
 {% load static %}
 
 {% block body %}
-    
+    <!-- Displays username, post, followers and following data -->
+    <div id="username-center" class="container">
+        <div id="data">
+            <h3 id="username-profile-child"></h3>
+            <div id="title-post-box" class="title-box">
+                <h5 class="title">Posts</h5>
+                <p id="title-content-post" class="title-content"></p>
+            </div>
+            <div id="title-followers-box" class="title-box">
+                <h5 class="title">Followers</h5>
+                <p id="title-content-followers" class="title-content"></p>
+            </div>
+            <div id="title-following-box" class="title-box">
+                <h5 class="title">Following</h5>
+                <p id="title-content-following" class="title-content"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="container" id="header-feed">
+        <h2>My Posts</h2>
+    </div>
+
+    <!-- Displays all of the profile's post -->
+    <div id="my-posts" class="container">
+    </div>
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'network/network.js' %}"></script>
+    <script src="{% static 'network/profile.js' %}"></script>
 {% endblock %}

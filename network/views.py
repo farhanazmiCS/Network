@@ -82,7 +82,7 @@ def index(request):
         posts = fetch.content
     except:
         return HttpResponse('An error occured.', status=500)
-
+    
     # Decodes the JSON (Works on list of json objects too!)
     json_data = json.loads(posts) 
     # Takes json_data and separates them to pages of 5
@@ -217,3 +217,27 @@ def comment(request, post_id):
         com = Comment(commenter=commenter, comment=comment, post_id=post_id)
         com.save()
         return HttpResponse(status=200)
+
+
+@login_required
+def search_user(request):
+    # Get search bar data
+    query = request.get['findUser']
+    users = User.objects.exclude(username=request.user)
+
+    matched = []
+
+    for user in users:
+        if query.lower() == (user.username).lower:
+            return render('network/profile.html')
+        elif query.lower in (user.username).lower:
+            matched.append(user)
+    
+    if matched == []:
+        return render('network/profile.html', {
+            'message': 'No such user exists.'
+        })
+    else:
+        return render('network/profile.html', {
+            'matched': matched
+        })

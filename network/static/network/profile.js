@@ -32,8 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function load_profile() {
-    // Username
-    let username = document.querySelector('strong').innerText;
+    // Get username
+    let ref = location.href;
+    let username = ref.slice(34);
 
     // Fetch follower / following data
     fetch(`/profiles/${username}`)
@@ -44,6 +45,10 @@ function load_profile() {
         let following_element = document.querySelector('#title-content-following');
         follower_element.innerHTML = profiles.follower_count;
         following_element.innerHTML = profiles.following_count;
+
+        // Insert username
+        let username_element = document.querySelector('#username-profile-child');
+        username_element.innerHTML = username;
     })
     .catch(error => {
         console.log(error);
@@ -64,10 +69,6 @@ function load_profile() {
     .catch(error => {
         console.log(error);
     })
-
-    // Insert username
-    let username_element = document.querySelector('#username-profile-child');
-    username_element.innerHTML = username;
 }
 
 function post(each) {
@@ -141,16 +142,16 @@ function editPost(post) {
     .catch(error => {
         console.log(error);
     })
-    
+
     let submitButton = document.querySelector(`#edit-post-button-${post.id}`);
     submitButton.addEventListener('click', () => {
         let request = new Request(
             `/post/${post.id}`,
             {headers: {'X-CSRFToken': csrftoken}}
         );
-        let post = document.querySelector(`#edit-field-${post.id}`).value;
+        let edited = document.querySelector(`#edit-field-${post.id}`).value;
         // Prevent empty edits
-        if (post === '') {
+        if (edited === '') {
             let originalContent = document.querySelector(`#post-content-${post.id}`).innerText;
             // If field is empty, set it to what the user has posted initially.
             fetch(request, {

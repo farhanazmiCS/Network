@@ -135,7 +135,7 @@ function post(each) {
     my_posts.appendChild(post_element);
 
     // Content of div
-    post_element.innerHTML = `<h4 id="post-original-poster-${ each.id }">${ each.op }</h4>
+    post_element.innerHTML = `<a href="/viewprofile/${ each.op }"><h4 id="post-original-poster-${ each.id }">${ each.op }</h4></a>
     <p id="post-content-${ each.id }">${ each.post }</p>
     <p class="timestamp">Posted on ${ each.timestamp }</p><div class="total-likes-${ each.id }">
     <i id="like-${ each.id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ each.id }"></h5>

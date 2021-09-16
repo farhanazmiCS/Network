@@ -42,7 +42,7 @@
     <div id="postsAll" class="container">
         {% for post in page %}
             <div id="{{ post.id }}"class="post-element">
-                <h4 id="post-original-poster-{{ post.id }}">{{ post.op }}</h4>
+                <a href="{% url 'view_profile' post.op %}"><h4 id="post-original-poster-{{ post.id }}">{{ post.op }}</h4></a>
                 <p id="post-content-{{ post.id }}">{{ post.post }}</p>
                 <p class="timestamp">Posted on {{ post.timestamp }}</p>
                 <div class="total-likes-{{ post.id }}">

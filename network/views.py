@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.db.models.fields import DateField
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, HttpResponseServerError
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
@@ -168,6 +168,9 @@ def profile(request, username):
             })
         return JsonResponse(get_profile.serialize())
     
+    elif request.method == 'PUT':
+        pass
+    
 
 # API Route for Likes
 @login_required
@@ -193,6 +196,7 @@ def like(request, post_id):
         liker = request.user
         Like.objects.filter(liker=liker, post_id=post_id).delete()
         return HttpResponse(status=200)
+    
 
 # API Route for Comments
 @login_required
@@ -222,22 +226,25 @@ def comment(request, post_id):
 @login_required
 def search_user(request):
     # Get search bar data
-    query = request.get['findUser']
-    users = User.objects.exclude(username=request.user)
+    query = request.GET['findUser']
+    try:
+        users = User.objects.exclude(username=request.user.username)
+    except User.DoesNotExist:
+        pass
 
     matched = []
 
     for user in users:
-        if query.lower() == (user.username).lower:
-            return render('network/profile.html')
-        elif query.lower in (user.username).lower:
+        if query == user.username:
+            return redirect(f'/viewprofile/{query}')
+        elif query in user.username:
             matched.append(user)
     
     if matched == []:
-        return render('network/profile.html', {
+        return render(request, 'network', {
             'message': 'No such user exists.'
         })
     else:
-        return render('network/profile.html', {
+        return render(request, 'network/searchresults.html', {
             'matched': matched
         })

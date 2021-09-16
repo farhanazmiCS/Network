@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function load_profile() {
-    // Get username
+    // Get username from URL
     let ref = location.href;
     let username = ref.slice(34);
 
@@ -69,6 +69,59 @@ function load_profile() {
     .catch(error => {
         console.log(error);
     })
+
+    // Follow button
+    if (username === document.querySelector('strong').innerText) {
+        document.querySelector('#follow-button').style.display = 'none';
+    }
+    else {
+        fetch(`/profiles/${username}`)
+        .then(response => response.json())
+        .then(profile => {
+            let followers = profile.followers;
+            if (followers.include(document.querySelector('strong').innerText)) {
+                // Display a different button if the user is already being followed by the logged-on user
+                let buttonDiv = document.querySelector('#follow-button');
+                buttonDiv.innerHTML = `<button type="button" class="btn btn-outline-primary">Following</button>`
+                // On click event
+                let button = buttonDiv.innerHTML;
+                button.addEventListener('click', () => {
+                    let request = new Request(
+                        `/profiles/${username}`,
+                        {headers: {'X-CSRFToken': csrftoken}}
+                    );
+                    // PUT Request on user TO BE followed (NOT logged-on user)
+                    fetch(request, {
+                        method: 'PUT',
+                        mode: 'same-origin',
+                        body: JSON.stringify({
+                            followers: followers,
+                            follower_count: followers.length
+                        })
+                    })
+                    // PUT Request on user THAT IS following (Logged-in user), but first need to get following list of the user
+                    fetch(`profiles/${document.querySelector('strong').innerText}`)
+                    .then(response => response.json())
+                    .then(loggedUser => {
+                        let loggedUserFollowing = loggedUser.following;
+                        // PUT
+                        let request = new Request(
+                            `/profiles/${document.querySelector('strong').innerText}`,
+                            {headers: {'X-CSRFToken': csrftoken}}
+                        );
+                        fetch(request, {
+                            method: 'PUT',
+                            mode: 'same-origin',
+                            body: JSON.stringify({
+                                following: loggedUserFollowing,
+                                following_count: loggedUserFollowing.length
+                            })
+                        })
+                    })
+                })
+            }
+        })
+    }
 }
 
 function post(each) {

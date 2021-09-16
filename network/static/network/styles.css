@@ -2,7 +2,7 @@ body {
     font-family: 'Urbanist', sans-serif;
 }
 
-#make-new-post, #postsAll, #my-posts {
+#make-new-post, #postsAll, #my-posts, #matched {
     margin: 0 auto;
     margin-top: 20px;
     margin-bottom: 20px;

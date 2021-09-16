@@ -1,0 +1,18 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <!-- Displays search results -->
+    {% if matched %}
+        <div id="matched" class="container">
+            {% for profile in matched %}
+                <h4>{{ profile.username }}</h4>
+                <hr>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/profile.js' %}"></script>
+{% endblock %}

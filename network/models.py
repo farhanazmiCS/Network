@@ -11,8 +11,8 @@ class User(AbstractUser):
     def serialize(self):
         return {
             "username": self.username,
-            "followers": [follower for follower in self.followers.all()],
-            "following": [following for following in self.following.all()],
+            "followers": [follower.username for follower in self.followers.all()],
+            "following": [following.username for following in self.following.all()],
             "follower_count": len(self.followers.all()),
             "following_count": len(self.following.all()),
         }

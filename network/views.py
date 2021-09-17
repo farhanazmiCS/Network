@@ -85,7 +85,7 @@ def index(request):
     
     # Decodes the JSON (Works on list of json objects too!)
     json_data = json.loads(posts) 
-    # Takes json_data and separates them to pages of 5
+    # Takes json_data and separates them to pages of 10
     p = Paginator(json_data, 10)
     # Gets the page number from the url. If user inputs a page that doesn't exist, set to 1.
     page_number = request.GET.get('page', 1)
@@ -159,17 +159,32 @@ def postUsername(request, username):
 @csrf_exempt
 @login_required
 def profile(request, username):
-    if request.method == 'GET':
-        try:
-            get_profile = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return JsonResponse({
+    try:
+        get_profile = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({
                 'error': f'User of { username } does not exist.'
-            })
+        })
+    if request.method == 'GET':
         return JsonResponse(get_profile.serialize())
     
-    elif request.method == 'PUT':
-        pass
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        
+        if data.get('followers') is not None:
+            get_profile.fwng.clear()
+            for i in range(len(data['followers'])):
+                follower = User.objects.get(username=data['followers'][i])
+                get_profile.fwng.add(follower)
+
+        if data.get('following') is not None:
+            get_profile.fwrs.clear()
+            for i in range(len(data['following'])):
+                following = User.objects.get(username=data['following'][i])
+                get_profile.fwrs.add(following)
+
+        get_profile.save()
+        return HttpResponse(status=200)
     
 
 # API Route for Likes

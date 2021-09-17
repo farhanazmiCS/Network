@@ -23,6 +23,6 @@ urlpatterns = [
     path("likes/<int:post_id>", views.like, name="like"),
     # Loads all comments for a post as JSON and POST new comments (GET and POST)
     path("comments/<int:post_id>", views.comment, name="comment"),
-    # Loads the profile
+    # Profile API
     path("profiles/<str:username>", views.profile, name="profile")
 ]

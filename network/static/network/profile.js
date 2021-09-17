@@ -75,52 +75,141 @@ function load_profile() {
         document.querySelector('#follow-button').style.display = 'none';
     }
     else {
-        fetch(`/profiles/${username}`)
+        // User 2 is the profile that is being viewed (Not logged-in user)
+        let user2_data = fetch(`/profiles/${username}`)
         .then(response => response.json())
-        .then(profile => {
-            let followers = profile.followers;
-            if (followers.include(document.querySelector('strong').innerText)) {
+        .then(user2 => {
+
+            let user2_followers = user2.followers;
+
+            // If user_2's follower list includes user_1's (logged-in user)
+            if (user2_followers.includes(document.querySelector('strong').innerText)) {
+                
                 // Display a different button if the user is already being followed by the logged-on user
                 let buttonDiv = document.querySelector('#follow-button');
-                buttonDiv.innerHTML = `<button type="button" class="btn btn-outline-primary">Following</button>`
-                // On click event
-                let button = buttonDiv.innerHTML;
+                buttonDiv.innerHTML = `<button type="button" id="following-button" class="btn btn-outline-primary">Following</button>`
+                
+            }
+
+            let user2_follower_following = {
+                followers: user2.followers,
+                following: user2.following
+            };
+            return user2_follower_following;
+        })
+
+        // User 1 is the profile that is being logged in.
+        let user1_data = fetch(`/profiles/${document.querySelector('strong').innerText}`)
+        .then(response => response.json())
+        .then(user1 => {
+            
+            let user1_followers_following = {
+                followers: user1.followers,
+                following: user1.following
+            };
+            return user1_followers_following;
+        })
+
+        // User 1's following data and User 2's followers data
+        Promise.all([user1_data, user2_data]).then(data => {
+            // On click event
+            if (document.querySelector('#follow-button') != null) {
+                let button = document.querySelector('#follow-button');
                 button.addEventListener('click', () => {
-                    let request = new Request(
-                        `/profiles/${username}`,
+
+                    // PUT data (user1_following)
+                    let request_user1 = new Request(
+                        `/profiles/${document.querySelector('strong').innerText}`,
                         {headers: {'X-CSRFToken': csrftoken}}
                     );
-                    // PUT Request on user TO BE followed (NOT logged-on user)
-                    fetch(request, {
+                    
+                    // Update following of user1
+                    data[0].following.push(username);
+                    
+                    // PUT request on user1
+                    fetch(request_user1, {
                         method: 'PUT',
                         mode: 'same-origin',
                         body: JSON.stringify({
-                            followers: followers,
-                            follower_count: followers.length
+                            following: data[0].following,
+                            following_count: data[0].following.length
                         })
                     })
-                    // PUT Request on user THAT IS following (Logged-in user), but first need to get following list of the user
-                    fetch(`profiles/${document.querySelector('strong').innerText}`)
-                    .then(response => response.json())
-                    .then(loggedUser => {
-                        let loggedUserFollowing = loggedUser.following;
-                        // PUT
-                        let request = new Request(
-                            `/profiles/${document.querySelector('strong').innerText}`,
-                            {headers: {'X-CSRFToken': csrftoken}}
-                        );
-                        fetch(request, {
-                            method: 'PUT',
-                            mode: 'same-origin',
-                            body: JSON.stringify({
-                                following: loggedUserFollowing,
-                                following_count: loggedUserFollowing.length
-                            })
+                    
+                    // PUT data (user2_followers)
+                    let request_user2 = new Request(
+                        `/profiles/${username}`,
+                        {headers: {'X-CSRFToken': csrftoken}}
+                    );
+                    
+                    // Update followers of user2
+                    data[1].followers.push(document.querySelector('strong').innerText);
+                    
+                    // PUT request on user2
+                    fetch(request_user2, {
+                        method: 'PUT',
+                        mode: 'same-origin',
+                        body: JSON.stringify({
+                            followers: data[1].followers,
+                            follower_count: data[1].followers.length
+                        })
+                    })
+                })
+            }
+            else {
+                let button = document.querySelector('#following-button');
+                button.addEventListener('click', () => {
+
+                    // PUT data (user1_following)
+                    let request_user1 = new Request(
+                        `/profiles/${document.querySelector('strong').innerText}`,
+                        {headers: {'X-CSRFToken': csrftoken}}
+                    );
+                    
+                    // Update following of user1
+                    for (let following = 0; following < data[1].length; following++) {
+                        if ((data[1])[following] == username) {
+                            var updateFollowing = data[1].splice(following, 1);
+                        }
+                    }
+                    
+                    // PUT request on user1
+                    let set_following = fetch(request_user1, {
+                        method: 'PUT',
+                        mode: 'same-origin',
+                        body: JSON.stringify({
+                            following: data[1],
+                            following_count: data[1].length
+                        })
+                    })
+                    
+                    // PUT data (user2_followers)
+                    let request_user2 = new Request(
+                        `/profiles/${username}`,
+                        {headers: {'X-CSRFToken': csrftoken}}
+                    );
+
+                    // Update followers of user2
+                    for (let followers = 0; followers < data[0].length; followers++) {
+                        if ((data[0])[followers] == username) {
+                            var updateFollowing = data[0].splice(followers, 1);
+                        }
+                    }
+                    
+                    
+                    // PUT request on user2
+                    let set_followers = fetch(request_user2, {
+                        method: 'PUT',
+                        mode: 'same-origin',
+                        body: JSON.stringify({
+                            followers: data[0],
+                            follower_count: data[0].length
                         })
                     })
                 })
             }
         })
+
     }
 }
 

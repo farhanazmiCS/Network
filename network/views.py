@@ -127,7 +127,6 @@ def post(request):
         return HttpResponseRedirect(reverse('index'))
     
 # API Route for Editing Posts
-@login_required
 def postId(request, id):
     try:
         post = Post.objects.get(id=id)
@@ -143,7 +142,7 @@ def postId(request, id):
         post.save()
         return HttpResponse(status=200)
 
-@login_required
+# API Route for getting all posts of a user
 def postUsername(request, username):
     try:
         # MODEL Related object reference. src: https://stackoverflow.com/questions/25153203/reverse-lookup-of-foreign-key-in-python-django
@@ -155,15 +154,13 @@ def postUsername(request, username):
     if request.method == 'GET':
         return JsonResponse(post_by_user, safe=False)
 
-# API Route for Followers/Following
-@csrf_exempt
-@login_required
+# API Route for Profile data
 def profile(request, username):
     try:
         get_profile = User.objects.get(username=username)
     except User.DoesNotExist:
         return JsonResponse({
-                'error': f'User of { username } does not exist.'
+            'error': f'User of { username } does not exist.'
         })
     if request.method == 'GET':
         return JsonResponse(get_profile.serialize())

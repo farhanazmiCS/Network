@@ -46,7 +46,8 @@
                 <p id="post-content-{{ post.id }}">{{ post.post }}</p>
                 <p class="timestamp">Posted on {{ post.timestamp }}</p>
                 <div class="total-likes-{{ post.id }}">
-                    <i id="like-{{ post.id }}" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-{{ post.id }}"></h5>
+                    <div class="like-div-{{ post.id }}">
+                    </div>
                     <i id="comment-{{ post.id }}" class="fas fa-comment"></i> <h5 class="comment-count" id="comment-count-{{ post.id }}"></h5>
                     {% if post.op == user.username %}
                         <h5 id="edit-{{ post.id }}" class="edit">Edit</h5>

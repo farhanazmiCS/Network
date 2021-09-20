@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Set href
     let view_profile = document.querySelector('#view-profile');
-    let username = document.querySelector('strong').innerText;
-    view_profile.href = `/viewprofile/${username}`;
+    let logged = document.querySelector('strong').innerText;
+    view_profile.href = `/viewprofile/${logged}`;
 
     // By default, load user's profile
     load_profile()
@@ -34,21 +34,29 @@ document.addEventListener('DOMContentLoaded', () => {
 function load_profile() {
     // Get username from URL
     let ref = location.href;
-    let username = ref.slice(34);
+    var username = ref.slice(34);
 
     // Fetch follower / following data
-    fetch(`/profiles/${username}`)
+    let user2_data = fetch(`/profiles/${username}`)
     .then(response => response.json())
-    .then(profiles => {
+    .then(user2 => {
         // Insert follower / following data
         let follower_element = document.querySelector('#title-content-followers');
         let following_element = document.querySelector('#title-content-following');
-        follower_element.innerHTML = profiles.follower_count;
-        following_element.innerHTML = profiles.following_count;
+        follower_element.innerHTML = user2.follower_count;
+        following_element.innerHTML = user2.following_count;
 
         // Insert username
         let username_element = document.querySelector('#username-profile-child');
         username_element.innerHTML = username;
+
+        let user2_follower_following = {
+            followers: user2.followers,
+            following: user2.following,
+            follower_count: user2.follower_count,
+            following_count: user2.following.count
+        };
+        return user2_follower_following;
     })
     .catch(error => {
         console.log(error);
@@ -75,10 +83,9 @@ function load_profile() {
         document.querySelector('#follow-button').style.display = 'none';
     }
     else {
+        document.querySelector('#header-posts').innerHTML = `${username}'s Posts`;
         // User 2 is the profile that is being viewed (Not logged-in user)
-        let user2_data = fetch(`/profiles/${username}`)
-        .then(response => response.json())
-        .then(user2 => {
+        user2_data.then(user2 => {
 
             let user2_followers = user2.followers;
 
@@ -86,14 +93,16 @@ function load_profile() {
             if (user2_followers.includes(document.querySelector('strong').innerText)) {
                 
                 // Display a different button if the user is already being followed by the logged-on user
-                let buttonDiv = document.querySelector('#follow-button');
+                let buttonDiv = document.querySelector('#follow-div');
                 buttonDiv.innerHTML = `<button type="button" id="following-button" class="btn btn-outline-primary">Following</button>`
                 
             }
-
+            // Data of User2
             let user2_follower_following = {
                 followers: user2.followers,
-                following: user2.following
+                following: user2.following,
+                follower_count: user2.follower_count,
+                following_count: user2.following.count
             };
             return user2_follower_following;
         })
@@ -102,114 +111,30 @@ function load_profile() {
         let user1_data = fetch(`/profiles/${document.querySelector('strong').innerText}`)
         .then(response => response.json())
         .then(user1 => {
-            
+            // Data of User1
             let user1_followers_following = {
                 followers: user1.followers,
-                following: user1.following
+                following: user1.following,
+                follower_count: user1.follower_count,
+                following_count: user1.following.count
             };
             return user1_followers_following;
         })
 
         // User 1's following data and User 2's followers data
         Promise.all([user1_data, user2_data]).then(data => {
-            // On click event
-            if (document.querySelector('#follow-button') != null) {
+            // On click event to FOLLOW user
+            if (document.querySelector('#follow-button') !== null) {
                 let button = document.querySelector('#follow-button');
-                button.addEventListener('click', () => {
-
-                    // PUT data (user1_following)
-                    let request_user1 = new Request(
-                        `/profiles/${document.querySelector('strong').innerText}`,
-                        {headers: {'X-CSRFToken': csrftoken}}
-                    );
-                    
-                    // Update following of user1
-                    data[0].following.push(username);
-                    
-                    // PUT request on user1
-                    fetch(request_user1, {
-                        method: 'PUT',
-                        mode: 'same-origin',
-                        body: JSON.stringify({
-                            following: data[0].following,
-                            following_count: data[0].following.length
-                        })
-                    })
-                    
-                    // PUT data (user2_followers)
-                    let request_user2 = new Request(
-                        `/profiles/${username}`,
-                        {headers: {'X-CSRFToken': csrftoken}}
-                    );
-                    
-                    // Update followers of user2
-                    data[1].followers.push(document.querySelector('strong').innerText);
-                    
-                    // PUT request on user2
-                    fetch(request_user2, {
-                        method: 'PUT',
-                        mode: 'same-origin',
-                        body: JSON.stringify({
-                            followers: data[1].followers,
-                            follower_count: data[1].followers.length
-                        })
-                    })
-                })
+                button.addEventListener('click', () => follow(data, username))
             }
-            else {
+            else if (document.querySelector('#following-button') !== null) {
+                let followDiv = document.querySelector('#follow-div')
+                followDiv.innerHTML = `<button type="button" id="following-button" class="btn btn-outline-primary">Following</button>`
                 let button = document.querySelector('#following-button');
-                button.addEventListener('click', () => {
-
-                    // PUT data (user1_following)
-                    let request_user1 = new Request(
-                        `/profiles/${document.querySelector('strong').innerText}`,
-                        {headers: {'X-CSRFToken': csrftoken}}
-                    );
-                    
-                    // Update following of user1
-                    for (let following = 0; following < data[1].length; following++) {
-                        if ((data[1])[following] == username) {
-                            var updateFollowing = data[1].splice(following, 1);
-                        }
-                    }
-                    
-                    // PUT request on user1
-                    let set_following = fetch(request_user1, {
-                        method: 'PUT',
-                        mode: 'same-origin',
-                        body: JSON.stringify({
-                            following: data[1],
-                            following_count: data[1].length
-                        })
-                    })
-                    
-                    // PUT data (user2_followers)
-                    let request_user2 = new Request(
-                        `/profiles/${username}`,
-                        {headers: {'X-CSRFToken': csrftoken}}
-                    );
-
-                    // Update followers of user2
-                    for (let followers = 0; followers < data[0].length; followers++) {
-                        if ((data[0])[followers] == username) {
-                            var updateFollowing = data[0].splice(followers, 1);
-                        }
-                    }
-                    
-                    
-                    // PUT request on user2
-                    let set_followers = fetch(request_user2, {
-                        method: 'PUT',
-                        mode: 'same-origin',
-                        body: JSON.stringify({
-                            followers: data[0],
-                            follower_count: data[0].length
-                        })
-                    })
-                })
+                button.addEventListener('click', () => unfollow(data, username))
             }
         })
-
     }
 }
 
@@ -316,5 +241,115 @@ function editPost(post) {
             })
             location.reload();
         }
+    })
+}
+
+function follow(data, username) {
+    
+    // PUT data (user1_following)
+    let request_user1 = new Request(
+        `/profiles/${document.querySelector('strong').innerText}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    
+    // Update following list of user1
+    data[0].following.push(username);
+    
+    // PUT request on user1
+    let f1 = fetch(request_user1, {
+        method: 'PUT',
+        mode: 'same-origin',
+        body: JSON.stringify({
+            following: data[0].following,
+            following_count: data[0].following.length
+        })
+    })
+    
+    // PUT data (user2_followers)
+    let request_user2 = new Request(
+        `/profiles/${username}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    
+    // Update followers of user2
+    data[1].followers.push(document.querySelector('strong').innerText);
+    
+    // PUT request on user2
+    let f2 = fetch(request_user2, {
+        method: 'PUT',
+        mode: 'same-origin',
+        body: JSON.stringify({
+            followers: data[1].followers,
+            follower_count: data[1].followers.length
+        })
+    })
+
+    Promise.all([f1, f2]).then(() => {
+        let currentFollowerCount = document.querySelector('#title-content-followers').innerText;
+        let newFollowerCount = Number(currentFollowerCount) + 1;
+        document.querySelector('#title-content-followers').innerHTML = newFollowerCount;
+
+        document.querySelector('#follow-div').innerHTML = `<button type="button" id="following-button" class="btn btn-outline-primary">Following</button>`;
+        document.querySelector('#following-button').addEventListener('click', () => unfollow(data, username));
+    })
+}
+
+function unfollow(data, username) {
+
+    // Remove following of user1 in 'following'
+    for (let i = 0; i < data[0].following.length; i++) {
+        if (data[0].following[i] === username) {
+            data[0].following.splice(i, 1);
+            break;
+        }
+    }
+
+    // Update followers of user2, removing user1's name
+    for (let i = 0; i < data[1].followers.length; i++) {
+        if (data[1].followers[i] == document.querySelector('strong').innerText) {
+            data[1].followers.splice(i, 1);
+            break;
+        }
+    }
+
+    // PUT data (user1_following)
+    let request_user1 = new Request(
+        `/profiles/${document.querySelector('strong').innerText}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    
+    // PUT request on user1
+    let uf1 = fetch(request_user1, {
+        method: 'PUT',
+        mode: 'same-origin',
+        body: JSON.stringify({
+            following: data[0].following,
+            following_count: data[0].following.length
+        })
+    })
+    
+    // PUT data (user2_followers)
+    let request_user2 = new Request(
+        `/profiles/${username}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+
+    // PUT request on user2
+    let uf2 = fetch(request_user2, {
+        method: 'PUT',
+        mode: 'same-origin',
+        body: JSON.stringify({
+            followers: data[1].followers,
+            follower_count: data[1].followers.length
+        })
+    })
+
+    Promise.all([uf1, uf2]).then(() => {
+        let currentFollowerCount = document.querySelector('#title-content-followers').innerText;
+        let newFollowerCount = Number(currentFollowerCount) - 1;
+        document.querySelector('#title-content-followers').innerHTML = newFollowerCount;
+
+        document.querySelector('#follow-div').innerHTML = `<button type="button" id="follow-button" class="btn btn-primary">Follow</button>`;
+        document.querySelector('#follow-button').addEventListener('click', () => follow(data, username));
     })
 }

@@ -185,7 +185,6 @@ def profile(request, username):
     
 
 # API Route for Likes
-@login_required
 def like(request, post_id):
     # Filter by posts
     try:
@@ -211,7 +210,6 @@ def like(request, post_id):
     
 
 # API Route for Comments
-@login_required
 def comment(request, post_id):
     try:
         comments = Comment.objects.filter(post=post_id)

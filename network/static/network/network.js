@@ -142,20 +142,19 @@ function likePost(id) {
             post: id
         })
     })
-    .then(
-        fetch(`/likes/${id}`)
-        .then(res => res.json())
-        .then(likes => likes.length)
-        .then(count => {
-            likeDiv.innerHTML = `<i id="like-${ id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ id }"></h5>`;
-            let likeButton = document.querySelector(`#like-${ id }`);
-            likeButton.style.color = 'red';
-            let likeCount = document.querySelector(`#like-count-${ id }`);
-            likeCount.innerHTML = count;
-            likeButton.addEventListener('click', () => unlikePost(id));
-            console.log(`User ${document.querySelector('strong').innerText} has liked post ${id}`);
-        })
-    )
+    .then(() => {
+        let currentlikeCount = document.querySelector(`#like-count-${ id }`).innerText;
+        likeDiv.innerHTML = `<i id="like-${ id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ id }"></h5>`;
+        let likeButton = document.querySelector(`#like-${ id }`);
+        likeButton.style.color = 'red';
+
+        let newlikeCount = Number(currentlikeCount) + 1;
+        
+        document.querySelector(`#like-count-${id}`).innerHTML = newlikeCount;
+        likeButton.addEventListener('click', () => unlikePost(id));
+        console.log(`User ${document.querySelector('strong').innerText} has liked post ${id}`);
+        console.log(newlikeCount);
+    })
 }
 
 
@@ -173,20 +172,18 @@ function unlikePost(id) {
             post: id
         })
     })
-    .then(
-        fetch(`/likes/${id}`)
-        .then(res => res.json())
-        .then(likes => likes.length)
-        .then(count => {
-            likeDiv.innerHTML = `<i id="like-${ id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ id }"></h5>`;
-            let unlikeButton = document.querySelector(`#like-${ id }`);
-            unlikeButton.style.color = 'black';
-            let likeCount = document.querySelector(`#like-count-${ id }`);
-            likeCount.innerHTML = count;
-            unlikeButton.addEventListener('click', () => likePost(id));
-            console.log(`User ${document.querySelector('strong').innerText} has unliked post ${id}`);
-        })
-    )
+    .then(() => {
+        let currentlikeCount = document.querySelector(`#like-count-${ id }`).innerHTML;
+
+        likeDiv.innerHTML = `<i id="like-${ id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ id }"></h5>`;
+        let unlikeButton = document.querySelector(`#like-${ id }`);
+        unlikeButton.style.color = 'black';
+        let newlikeCount = Number(currentlikeCount) - 1;
+        document.querySelector(`#like-count-${id}`).innerHTML = newlikeCount;
+        unlikeButton.addEventListener('click', () => likePost(id));
+        console.log(`User ${document.querySelector('strong').innerText} has unliked post ${id}`);
+        console.log(newlikeCount);
+    })
 }
 
 

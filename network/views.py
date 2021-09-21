@@ -72,14 +72,15 @@ def register(request):
         })
 
 # Display All Posts via index.html
+@login_required
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse(login_view))
 
     # Fetch data
     try:
-        fetch = requests.get('http://127.0.0.1:9000/allposts')
-        posts = fetch.content
+        response = requests.get('http://127.0.0.1:9000/allposts')
+        posts = response.content
     except:
         return HttpResponse('An error occured.', status=500)
     
@@ -101,6 +102,13 @@ def index(request):
         'page_num_after': page_number_after,
         'last_page': last_page
     })
+
+
+# Displays all the posts from accounts that the user follows
+@login_required
+def indexFollowing(request):
+    pass
+    
 
 @login_required
 def view_profile(request, username):
@@ -150,12 +158,37 @@ def postUsername(request, username):
     try:
         # MODEL Related object reference. src: https://stackoverflow.com/questions/25153203/reverse-lookup-of-foreign-key-in-python-django
         user = User.objects.get(username=username)
-        post_by_user = [post.serialize() for post in user.posts.all().order_by('-timestamp')]            
+        post_by_user = [post.serialize() for post in user.posts.all().order_by('-id')]            
     except Post.DoesNotExist:
         return HttpResponseNotFound('No posts for this user.', status=204)
 
     if request.method == 'GET':
         return JsonResponse(post_by_user, safe=False)
+
+# API route to GET all the posts posted by followers of logged-in user
+def postFollowing(request):
+    # To keep all users posts
+    allposts = []
+    # Fetch user data
+    user = User.objects.get(id=request.user.id)
+    # Gets all of the users that the request.user is following
+    post = user.posts.all()
+    following = user.fwng.all()
+    # All posts made by followed users
+    for follower in following:
+        posts = follower.posts.all()
+        # Iterate and append post into allposts
+        for post in posts:
+            allposts.append(post)
+    
+    # Retrieve id key to sort posts
+    def key(post):
+        return int(post.id)
+    
+    allposts.sort(key=key,reverse=True)
+    
+    if request.method == 'GET':
+        return JsonResponse([post.serialize() for post in allposts], safe=False)
 
 # API Route for Profile data
 def profile(request, username):

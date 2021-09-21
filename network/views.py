@@ -138,6 +138,9 @@ def postId(request, id):
 
     elif request.method == 'PUT':
         postData = json.loads(request.body)
+        if postData.get('editor') is not None:
+            if postData['editor'] != post.originalPoster.username:
+                return HttpResponse('''You are not permitted to make changes to this user's post''', status=403)
         post.post = postData['post']
         post.save()
         return HttpResponse(status=200)
@@ -166,18 +169,18 @@ def profile(request, username):
         return JsonResponse(get_profile.serialize())
     
     if request.method == 'PUT':
-        data = json.loads(request.body)
+        profileData = json.loads(request.body)
         
-        if data.get('followers') is not None:
+        if profileData.get('followers') is not None:
             get_profile.fwng.clear()
-            for i in range(len(data['followers'])):
-                follower = User.objects.get(username=data['followers'][i])
+            for i in range(len(profileData['followers'])):
+                follower = User.objects.get(username=profileData['followers'][i])
                 get_profile.fwng.add(follower)
 
-        if data.get('following') is not None:
+        if profileData.get('following') is not None:
             get_profile.fwrs.clear()
-            for i in range(len(data['following'])):
-                following = User.objects.get(username=data['following'][i])
+            for i in range(len(profileData['following'])):
+                following = User.objects.get(username=profileData['following'][i])
                 get_profile.fwrs.add(following)
 
         get_profile.save()

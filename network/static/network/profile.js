@@ -169,7 +169,6 @@ function post(each) {
     // Append modal into body
     body.appendChild(modal_fade);
     
-
     // Modal Dialogue
     let modal_dialog = document.createElement('div');
     modal_dialog.className = 'modal-dialog modal-dialog-scrollable';
@@ -192,9 +191,15 @@ function post(each) {
         <button id="edit-post-button-${ each.id }" class="btn btn-primary" type="button">Edit</button>
     </div>
     </div>`;
-    
-    // Comment Button
-    document.querySelector(`#edit-${ each.id }`).addEventListener('click', () => editPost(each));
+
+    if (document.querySelector('strong').innerText != document.querySelector(`#post-original-poster-${ each.id }`).innerHTML) {
+        document.querySelector(`#edit-${ each.id }`).style.display = 'none';
+    }
+    else {
+        // Edit Button
+        document.querySelector(`#edit-${ each.id }`).style.display = 'inline-block';
+        document.querySelector(`#edit-${ each.id }`).addEventListener('click', () => editPost(each));
+    }
 }
 
 function editPost(post) {
@@ -236,6 +241,8 @@ function editPost(post) {
                 method: 'PUT',
                 mode: 'same-origin',
                 body: JSON.stringify({
+                    editor: document.querySelector('strong').innerText,
+                    op: document.querySelector(`#post-original-poster-${post.id}`).innerText,
                     post: document.querySelector(`#edit-field-${post.id}`).value
                 })
             })

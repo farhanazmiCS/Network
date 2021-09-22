@@ -200,7 +200,7 @@ def postFollowing(request, username):
     # Fetch user data
     user = User.objects.get(username=username)
     # Gets all of the users that the request.user is following
-    following = user.fwrs.all()
+    following = user.followings.all()
     # All posts made by followed users
     for follower in following:
         posts = follower.posts.all()
@@ -232,16 +232,16 @@ def profile(request, username):
         profileData = json.loads(request.body)
         
         if profileData.get('followers') is not None:
-            get_profile.fwng.clear()
+            get_profile.followers.clear()
             for i in range(len(profileData['followers'])):
                 follower = User.objects.get(username=profileData['followers'][i])
-                get_profile.fwng.add(follower)
+                get_profile.followers.add(follower)
 
         if profileData.get('following') is not None:
-            get_profile.fwrs.clear()
+            get_profile.followings.clear()
             for i in range(len(profileData['following'])):
                 following = User.objects.get(username=profileData['following'][i])
-                get_profile.fwrs.add(following)
+                get_profile.followings.add(following)
 
         get_profile.save()
         return HttpResponse(status=200)

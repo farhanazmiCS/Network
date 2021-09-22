@@ -3,8 +3,8 @@ from django.db import models
 
 
 class User(AbstractUser):
-    followers = models.ManyToManyField('User', related_name='fwrs', null=True)
-    following = models.ManyToManyField('User', related_name='fwng', null=True)
+    follower = models.ManyToManyField('User', related_name='followings', null=True)
+    following = models.ManyToManyField('User', related_name='followers', null=True)
     follower_count = models.IntegerField(default=0)
     following_count = models.IntegerField(default=0)
 

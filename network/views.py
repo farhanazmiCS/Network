@@ -72,14 +72,15 @@ def register(request):
         })
 
 # Display All Posts via index.html
+@login_required
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse(login_view))
 
     # Fetch data
     try:
-        fetch = requests.get('http://127.0.0.1:9000/allposts')
-        posts = fetch.content
+        response = requests.get('http://127.0.0.1:9000/allposts')
+        posts = response.content
     except:
         return HttpResponse('An error occured.', status=500)
     
@@ -101,6 +102,41 @@ def index(request):
         'page_num_after': page_number_after,
         'last_page': last_page
     })
+
+
+# Displays all the posts from accounts that the user follows
+@login_required
+def indexFollowing(request, username):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse(login_view))
+
+    # Fetch data
+    try:
+        response = requests.get(f'http://127.0.0.1:9000/following/{request.user.username}')
+        posts = response.content
+    except:
+        return HttpResponse('An error occured.', status=500)
+    
+    
+    # Decodes the JSON (Works on list of json objects too!)
+    json_data = json.loads(posts) 
+    # Takes json_data and separates them to pages of 10
+    p = Paginator(json_data, 10)
+    # Gets the page number from the url. If user inputs a page that doesn't exist, set to 1.
+    page_number = request.GET.get('page', 1)
+    page_number_before = int(page_number) - 1
+    page_number_after = int(page_number) + 1
+    last_page = p.num_pages
+    # Load content of the requested page
+    current_page = p.page(page_number)
+    return render(request, 'network/findex.html', {
+        'page': current_page,
+        'page_num': page_number,
+        'page_num_before': page_number_before,
+        'page_num_after': page_number_after,
+        'last_page': last_page
+    })
+    
 
 @login_required
 def view_profile(request, username):
@@ -150,7 +186,7 @@ def postUsername(request, username):
     try:
         # MODEL Related object reference. src: https://stackoverflow.com/questions/25153203/reverse-lookup-of-foreign-key-in-python-django
         user = User.objects.get(username=username)
-        post_by_user = [post.serialize() for post in user.posts.all().order_by('-timestamp')]            
+        post_by_user = [post.serialize() for post in user.posts.all().order_by('-id')]            
     except Post.DoesNotExist:
         return HttpResponseNotFound('No posts for this user.', status=204)
 
@@ -158,14 +194,13 @@ def postUsername(request, username):
         return JsonResponse(post_by_user, safe=False)
 
 # API route to GET all the posts posted by followers of logged-in user
-def postFollowing(request):
+def postFollowing(request, username):
     # To keep all users posts
     allposts = []
     # Fetch user data
-    user = User.objects.get(username=request.user.username)
+    user = User.objects.get(username=username)
     # Gets all of the users that the request.user is following
-    post = user.posts.all()
-    following = user.fwng.all()
+    following = user.fwrs.all()
     # All posts made by followed users
     for follower in following:
         posts = follower.posts.all()

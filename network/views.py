@@ -72,15 +72,14 @@ def register(request):
         })
 
 # Display All Posts via index.html
-@login_required
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse(login_view))
 
     # Fetch data
     try:
-        response = requests.get('http://127.0.0.1:9000/allposts')
-        posts = response.content
+        fetch = requests.get('http://127.0.0.1:9000/allposts')
+        posts = fetch.content
     except:
         return HttpResponse('An error occured.', status=500)
     
@@ -102,42 +101,6 @@ def index(request):
         'page_num_after': page_number_after,
         'last_page': last_page
     })
-
-
-# Displays all the posts from accounts that the user follows
-@login_required
-def indexFollowing(request, username):
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect(reverse(login_view))
-
-    # Fetch data
-    try:
-        response = requests.get(f'http://127.0.0.1:9000/following/{username}')
-        posts = response.content
-    except:
-        return HttpResponse('An error occured.', status=500)
-
-    json_data = json.loads(posts)
-
-    if username == request.user.username:
-        p = Paginator(json_data, 10)
-        # Gets the page number from the url. If user inputs a page that doesn't exist, set to 1.
-        page_number = request.GET.get('page', 1)
-        page_number_before = int(page_number) - 1
-        page_number_after = int(page_number) + 1
-        last_page = p.num_pages
-        # Load content of the requested page
-        current_page = p.page(page_number)
-        return render(request, 'network/findex.html', {
-            'page': current_page,
-            'page_num': page_number,
-            'page_num_before': page_number_before,
-            'page_num_after': page_number_after,
-            'last_page': last_page
-        })
-    # Return 'all posts' when the user inputs a username argument that is not equals logged in user
-    return HttpResponseRedirect(reverse(index))
-    
 
 @login_required
 def view_profile(request, username):
@@ -187,7 +150,7 @@ def postUsername(request, username):
     try:
         # MODEL Related object reference. src: https://stackoverflow.com/questions/25153203/reverse-lookup-of-foreign-key-in-python-django
         user = User.objects.get(username=username)
-        post_by_user = [post.serialize() for post in user.posts.all().order_by('-id')]            
+        post_by_user = [post.serialize() for post in user.posts.all().order_by('-timestamp')]            
     except Post.DoesNotExist:
         return HttpResponseNotFound('No posts for this user.', status=204)
 

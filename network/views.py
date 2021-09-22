@@ -117,25 +117,28 @@ def indexFollowing(request, username):
     except:
         return HttpResponse('An error occured.', status=500)
     
+    if username == request.user.username:
     
-    # Decodes the JSON (Works on list of json objects too!)
-    json_data = json.loads(posts) 
-    # Takes json_data and separates them to pages of 10
-    p = Paginator(json_data, 10)
-    # Gets the page number from the url. If user inputs a page that doesn't exist, set to 1.
-    page_number = request.GET.get('page', 1)
-    page_number_before = int(page_number) - 1
-    page_number_after = int(page_number) + 1
-    last_page = p.num_pages
-    # Load content of the requested page
-    current_page = p.page(page_number)
-    return render(request, 'network/findex.html', {
-        'page': current_page,
-        'page_num': page_number,
-        'page_num_before': page_number_before,
-        'page_num_after': page_number_after,
-        'last_page': last_page
-    })
+        # Decodes the JSON (Works on list of json objects too!)
+        json_data = json.loads(posts) 
+        # Takes json_data and separates them to pages of 10
+        p = Paginator(json_data, 10)
+        # Gets the page number from the url. If user inputs a page that doesn't exist, set to 1.
+        page_number = request.GET.get('page', 1)
+        page_number_before = int(page_number) - 1
+        page_number_after = int(page_number) + 1
+        last_page = p.num_pages
+        # Load content of the requested page
+        current_page = p.page(page_number)
+        return render(request, 'network/findex.html', {
+            'page': current_page,
+            'page_num': page_number,
+            'page_num_before': page_number_before,
+            'page_num_after': page_number_after,
+            'last_page': last_page
+        })
+    
+    return HttpResponseRedirect(reverse(index))
     
 
 @login_required

@@ -149,12 +149,14 @@ function post(each) {
     my_posts.appendChild(post_element);
 
     // Content of div
-    post_element.innerHTML = `<a href="/viewprofile/${ each.op }"><h4 id="post-original-poster-${ each.id }">${ each.op }</h4></a>
+    post_element.innerHTML = `<a href="/viewprofile/${each.op}"><h4 id="post-original-poster-${ each.id }">${ each.op }</h4></a>
     <p id="post-content-${ each.id }">${ each.post }</p>
-    <p class="timestamp">Posted on ${ each.timestamp }</p><div class="total-likes-${ each.id }">
-    <i id="like-${ each.id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ each.id }"></h5>
-    <i id="comment-${ each.id }" class="fas fa-comment"></i> <h5 class="comment-count" id="comment-count-${ each.id }"></h5>
-    <h5 id="edit-${ each.id }" class="edit" data-bs-toggle="modal" data-bs-target="#modal-edit-${ each.id }">Edit</h5>
+    <p class="timestamp">Posted on ${ each.timestamp }</p>
+    <div class="total-likes-${ each.id }">
+        <div class="like-div-${ each.id }">
+        </div>
+        <i id="comment-${ each.id }" class="fas fa-comment"></i> <h5 class="comment-count" id="comment-count-${ each.id }"></h5>
+        <h5 id="edit-${ each.id }" class="edit">Edit</h5>
     </div>
     <hr>`
 
@@ -200,6 +202,37 @@ function post(each) {
         document.querySelector(`#edit-${ each.id }`).style.display = 'inline-block';
         document.querySelector(`#edit-${ each.id }`).addEventListener('click', () => editPost(each));
     }
+
+
+    // Like function
+    fetch(`/likes/${each.id}`)
+    .then(res => res.json())
+    .then(likes => {
+        // Number of likes
+        var likeNum = likes.length;
+        var likeDiv = document.querySelector(`.like-div-${each.id}`);
+    
+        if (likes.some(like => like.liker == user)) {
+            likeDiv.innerHTML = `<i id="like-${ each.id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ each.id }"></h5>`;
+            let likeButton = document.querySelector(`#like-${ each.id }`);
+            likeButton.style.color = 'red';
+            likeButton.addEventListener('click', () => unlikePost(each.id));
+        }
+        else {
+            likeDiv.innerHTML = `<i id="like-${ each.id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ each.id }"></h5>`;
+            let unlikeButton = document.querySelector(`#like-${ each.id }`);
+            unlikeButton.style.color = 'black';
+            unlikeButton.addEventListener('click', () => likePost(each.id))
+        }
+
+        let likeCount = document.querySelector(`#like-count-${each.id}`)
+        likeCount.innerHTML = likeNum;
+    })
+    .catch(error => {
+        console.log(error);
+    })
+
+
 }
 
 function editPost(post) {
@@ -358,5 +391,63 @@ function unfollow(data, username) {
 
         document.querySelector('#follow-div').innerHTML = `<button type="button" id="follow-button" class="btn btn-primary">Follow</button>`;
         document.querySelector('#follow-button').addEventListener('click', () => follow(data, username));
+    })
+}
+
+function likePost(id) {
+    var likeDiv = document.querySelector(`.like-div-${id}`);
+    let request = new Request(
+        `/likes/${id}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    fetch(request, {
+        method: 'POST',
+        mode: 'same-origin',
+        body: JSON.stringify({
+            liker: document.querySelector('strong').innerText,
+            post: id
+        })
+    })
+    .then(() => {
+        let currentlikeCount = document.querySelector(`#like-count-${ id }`).innerText;
+        likeDiv.innerHTML = `<i id="like-${ id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ id }"></h5>`;
+        let likeButton = document.querySelector(`#like-${ id }`);
+        likeButton.style.color = 'red';
+
+        let newlikeCount = Number(currentlikeCount) + 1;
+        
+        document.querySelector(`#like-count-${id}`).innerHTML = newlikeCount;
+        likeButton.addEventListener('click', () => unlikePost(id));
+        console.log(`User ${document.querySelector('strong').innerText} has liked post ${id}`);
+        console.log(newlikeCount);
+    })
+}
+
+
+function unlikePost(id) {
+    var likeDiv = document.querySelector(`.like-div-${id}`);
+    let request = new Request(
+        `/likes/${id}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    fetch(request, {
+        method: 'DELETE',
+        mode: 'same-origin',
+        body: JSON.stringify({
+            liker: document.querySelector('strong').innerText,
+            post: id
+        })
+    })
+    .then(() => {
+        let currentlikeCount = document.querySelector(`#like-count-${ id }`).innerHTML;
+
+        likeDiv.innerHTML = `<i id="like-${ id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ id }"></h5>`;
+        let unlikeButton = document.querySelector(`#like-${ id }`);
+        unlikeButton.style.color = 'black';
+        let newlikeCount = Number(currentlikeCount) - 1;
+        document.querySelector(`#like-count-${id}`).innerHTML = newlikeCount;
+        unlikeButton.addEventListener('click', () => likePost(id));
+        console.log(`User ${document.querySelector('strong').innerText} has unliked post ${id}`);
+        console.log(newlikeCount);
     })
 }

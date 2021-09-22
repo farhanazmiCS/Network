@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("myfeed", views.indexFollowing, name="indexFollowing"),
+    path("myfeed/<str:username>", views.indexFollowing, name="findex"),
     path("login", views.login_view, name="login"),
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
@@ -20,7 +20,7 @@ urlpatterns = [
     # Loads a post by USERNAME as JSON 
     path("posts/<str:username>", views.postUsername, name="postbyUsername"),
     # Loads all the posts of users that a user is following
-    path("following", views.postFollowing, name="postsFollowing"),
+    path("following", views.postFollowing, name="following"),
     # Loads all likes for a post as JSON, POST new likes and DELETE likes (GET, POST, DELETE)
     path("likes/<int:post_id>", views.like, name="like"),
     # Loads all comments for a post as JSON and POST new comments (GET and POST)

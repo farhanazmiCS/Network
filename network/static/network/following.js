@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function display_all_feed() {
 
-    document.querySelector('#all-posts').style.color = 'white';
+    document.querySelector('#following-posts').style.color = 'white';
 
     fetch_all_posts();
 
@@ -42,7 +42,7 @@ function display_all_feed() {
 
 
 function fetch_all_posts() {
-    fetch('/allposts')
+    fetch(`/following/${document.querySelector('strong').innerText}`)
     .then(response => response.json())
     .then(post => {
         post.forEach(eachPost);

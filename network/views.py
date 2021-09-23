@@ -176,7 +176,7 @@ def postId(request, id):
         postData = json.loads(request.body)
         if postData.get('editor') is not None:
             if postData['editor'] != post.originalPoster.username:
-                return HttpResponse('''You are not permitted to make changes to this user's post''', status=403)
+                return HttpResponseForbidden('Forbidden.')
         post.post = postData['post']
         post.save()
         return HttpResponse(status=200)

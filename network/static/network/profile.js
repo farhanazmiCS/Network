@@ -197,7 +197,7 @@ function post(each) {
     </div>`;
 
     if (document.querySelector('strong').innerText != document.querySelector(`#post-original-poster-${ each.id }`).innerHTML) {
-        document.querySelector(`#edit-${ each.id }`).style.display = 'none';
+        document.querySelector(`#edit-${ each.id }`).remove();
     }
     else {
         // Edit Button

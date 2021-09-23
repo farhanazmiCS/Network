@@ -333,6 +333,8 @@ function editPost(element) {
                 method: 'PUT',
                 mode: 'same-origin',
                 body: JSON.stringify({
+                    editor: document.querySelector('strong').innerText,
+                    op: document.querySelector(`#post-original-poster-${element.id}`).innerText,
                     post: document.querySelector(`#edit-field-${element.id}`).value
                 })
             })

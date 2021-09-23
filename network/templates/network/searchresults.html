@@ -4,11 +4,19 @@
 {% block body %}
     <!-- Displays search results -->
     {% if matched %}
+        <div class="container" id="search-results-container">
+            <h2 id="search-results-header">Query for '{{ query }}'</h2>
+        </div>
         <div id="matched" class="container">
             {% for profile in matched %}
-                <h4>{{ profile.username }}</h4>
+                <a href="/viewprofile/{{ profile.username }}"><h4>{{ profile.username }}</h4></a>
                 <hr>
             {% endfor %}
+        </div>
+    {% endif %}
+    {% if message %}
+        <div class="container" id="zero-results">
+            <h2>{{ message }}</h2>
         </div>
     {% endif %}
 {% endblock %}

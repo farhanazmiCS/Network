@@ -72,7 +72,6 @@ def register(request):
         })
 
 # Display All Posts via index.html
-@login_required
 def index(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse(login_view))
@@ -105,7 +104,6 @@ def index(request):
 
 
 # Displays all the posts from accounts that the user follows
-@login_required
 def indexFollowing(request, username):
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse(login_view))
@@ -303,12 +301,13 @@ def comment(request, post_id):
 def search_user(request):
     # Get search bar data
     query = request.GET['findUser']
+    # matched queries
+    matched = []
+
     try:
         users = User.objects.exclude(username=request.user.username)
     except User.DoesNotExist:
         pass
-
-    matched = []
 
     for user in users:
         if query == user.username:
@@ -317,10 +316,12 @@ def search_user(request):
             matched.append(user)
     
     if matched == []:
-        return render(request, 'network', {
+        return render(request, 'network/searchresults.html', {
             'message': 'No such user exists.'
         })
+        
     else:
         return render(request, 'network/searchresults.html', {
-            'matched': matched
+            'matched': matched,
+            'query': query
         })

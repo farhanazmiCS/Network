@@ -2,7 +2,7 @@ body {
     font-family: 'Urbanist', sans-serif;
 }
 
-#make-new-post, #postsAll, #my-posts, #matched {
+#make-new-post, #postsAll, #my-posts, #matched, #zero-results {
     margin: 0 auto;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -10,6 +10,18 @@ body {
     border-radius: 7px;
     background-color: #fcfcfc;
     box-shadow: 0px 0px 4px 1px #dedede;
+}
+
+#search-results-container {
+    padding-top: 10px;
+}
+
+#search-results-header {
+    font-weight: bold;
+}
+
+#zero-results {
+    text-align: center;
 }
 
 #header-feed {

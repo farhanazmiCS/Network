@@ -203,7 +203,6 @@ function post(each) {
         document.querySelector(`#edit-${ each.id }`).addEventListener('click', () => editPost(each));
     }
 
-
     // Like function
     fetch(`/likes/${each.id}`)
     .then(res => res.json())
@@ -231,8 +230,6 @@ function post(each) {
     .catch(error => {
         console.log(error);
     })
-
-
 }
 
 function editPost(post) {

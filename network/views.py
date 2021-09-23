@@ -8,7 +8,6 @@ from django.http.response import HttpResponseBadRequest, HttpResponseForbidden, 
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.core.paginator import Paginator
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 
@@ -321,7 +320,13 @@ def search_user(request):
         })
         
     else:
-        return render(request, 'network/searchresults.html', {
-            'matched': matched,
-            'query': query
-        })
+        if len(matched) == 1: 
+            return render(request, 'network/searchresults.html', {
+                'matched': matched,
+                'onematch': f'''1 matching query for "{ query }"'''
+            })
+        else:
+            return render(request, 'network/searchresults.html', {
+                'matched': matched,
+                'multiplematch': f'''{len(matched)} matching queries for "{ query }"'''
+            })

@@ -148,6 +148,8 @@ function post(each) {
     let my_posts = document.querySelector('#my-posts');
     my_posts.appendChild(post_element);
 
+    let user = document.querySelector('strong').innerText
+
     // Content of div
     post_element.innerHTML = `<a href="/viewprofile/${each.op}"><h4 id="post-original-poster-${ each.id }">${ each.op }</h4></a>
     <p id="post-content-${ each.id }">${ each.post }</p>
@@ -155,28 +157,28 @@ function post(each) {
     <div class="total-likes-${ each.id }">
         <div class="like-div-${ each.id }">
         </div>
-        <i id="comment-${ each.id }" class="fas fa-comment"></i> <h5 class="comment-count" id="comment-count-${ each.id }"></h5>
-        <h5 id="edit-${ each.id }" class="edit">Edit</h5>
+        <i id="comment-${ each.id }" class="fas fa-comment" data-bs-toggle="modal" data-bs-target="#modal-comment-${ each.id }"></i> <h5 class="comment-count" id="comment-count-${ each.id }"></h5>
+        <h5 id="edit-${ each.id }" class="edit" data-bs-toggle="modal" data-bs-target="#modal-edit-${ each.id }">Edit</h5>
     </div>
     <hr>`
 
     let body = document.querySelector('.body');
-    let modal_fade = document.createElement('div');
-    // Edit modal attributes
-    modal_fade.className = 'modal fade';
-    modal_fade.id = `modal-edit-${each.id}`;
-    modal_fade.setAttribute('tabindex', '-1');
-    modal_fade.setAttribute('aria-labelledby', 'exampleModalLabel');
-    modal_fade.setAttribute('aria-hidden', 'true');
+    let modal_fade_edit = document.createElement('div');
+    // Modal attributes (Edit)
+    modal_fade_edit.className = 'modal fade';
+    modal_fade_edit.id = `modal-edit-${each.id}`;
+    modal_fade_edit.setAttribute('tabindex', '-1');
+    modal_fade_edit.setAttribute('aria-labelledby', 'exampleModalLabel');
+    modal_fade_edit.setAttribute('aria-hidden', 'true');
     // Append modal into body
-    body.appendChild(modal_fade);
+    body.appendChild(modal_fade_edit);
     
-    // Modal Dialogue
+    // Modal Dialogue (Edit)
     let modal_dialog = document.createElement('div');
     modal_dialog.className = 'modal-dialog modal-dialog-scrollable';
-    modal_fade.appendChild(modal_dialog);
+    modal_fade_edit.appendChild(modal_dialog);
 
-    // Modal Content
+    // Modal Content (Edit)
     let modal_content = document.createElement('div');
     modal_content.id = `modal-content-edit-${each.id}`;
     modal_content.className = 'modal-content';
@@ -203,6 +205,74 @@ function post(each) {
         document.querySelector(`#edit-${ each.id }`).addEventListener('click', () => editPost(each));
     }
 
+    let modal_fade_comment = document.createElement('div');
+    // Modal attributes (Comment)
+    modal_fade_comment.className = 'modal fade';
+    modal_fade_comment.id = `modal-comment-${each.id}`;
+    modal_fade_comment.setAttribute('tabindex', '-1');
+    modal_fade_comment.setAttribute('aria-labelledby', 'exampleModalLabel');
+    modal_fade_comment.setAttribute('aria-hidden', 'true');
+
+    // Append modal (comments) into body
+    body.appendChild(modal_fade_comment);
+
+    // Modal (comment) dialogue
+    let modal_dialog_comment = document.createElement('div');
+    modal_dialog_comment.className = 'modal-dialog modal-dialog-scrollable';
+    modal_fade_comment.appendChild(modal_dialog_comment);
+
+    // Modal Content (Comment)
+    let modal_content_comment = document.createElement('div');
+    modal_content_comment.id = `modal-content-comment-${each.id}`;
+    modal_content_comment.className = 'modal-content';
+    modal_dialog_comment.appendChild(modal_content_comment);
+    modal_content_comment.innerHTML = `<div class="modal-header">
+    <h5 class="modal-title-${ each.id }" id="staticBackdropLabel" style="margin-bottom: 0px;"></h5>
+    <button id="btn-close-${ each.id }"type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="margin-bottom: 0px;"></button>
+    </div>
+    <div class="modal-body" id="modal-body-parent-${ each.id }">
+    <div id="modal-body-empty-${ each.id }">
+        No comments :/
+    </div>
+    </div>
+    <div id="modal-footer-${ each.id }" class="modal-footer">
+    <div class="input-group mb-0">
+        <input type="text" id="comment-field-${ each.id }" class="form-control" placeholder="Your Comment" aria-label="Recipient's username" aria-describedby="button-addon2">
+        <button id="comment-post-${ each.id }" class="btn btn-primary" type="button">Comment</button>
+    </div>
+    </div>`;
+
+    // Fetches comments of the post and its count
+    fetch(`/comments/${each.id}`)
+    .then(response => response.json())
+    .then(comments => {
+
+        // Hide 'no comments'
+        document.querySelector(`#modal-body-empty-${ each.id }`).style.display = 'none';
+
+        // Number of comments
+        let commentNum = comments.length;
+        let commentsNumField = document.querySelector(`#comment-count-${ each.id }`);
+        commentsNumField.innerHTML = commentNum;
+
+        // On click to comment on post (Displays overlay div)
+        let toComment = document.querySelector(`#comment-${ each.id }`);
+        toComment.setAttribute('data-bs-toggle', 'modal');
+        toComment.setAttribute('data-bs-target', `#modal-comment-${ each.id }`);
+        toComment.addEventListener('click', () => {
+
+            if (document.querySelector(`#modal-body-${each.id}`) != null) {
+                document.querySelector(`#modal-body-${each.id}`).style.display = 'block';
+            }
+            else {
+                viewComment(each);
+            }
+        })
+    })
+    .catch(error => {
+        console.log(error);
+    })
+
     // Like function
     fetch(`/likes/${each.id}`)
     .then(res => res.json())
@@ -211,7 +281,7 @@ function post(each) {
         var likeNum = likes.length;
         var likeDiv = document.querySelector(`.like-div-${each.id}`);
     
-        if (likes.some(like => like.liker == user)) {
+        if (likes.some(like => like.liker === user)) {
             likeDiv.innerHTML = `<i id="like-${ each.id }" class="far fa-thumbs-up"></i> <h5 class="like-count" id="like-count-${ each.id }"></h5>`;
             let likeButton = document.querySelector(`#like-${ each.id }`);
             likeButton.style.color = 'red';
@@ -447,4 +517,78 @@ function unlikePost(id) {
         console.log(`User ${document.querySelector('strong').innerText} has unliked post ${id}`);
         console.log(newlikeCount);
     })
+}
+
+// Will create new comment
+function viewComment(element) {
+    // Title
+    let title = document.querySelector(`.modal-title-${element.id}`)
+    title.innerText = `Comments on ${element.op}'s post`;
+
+    // Load Comments
+    fetch(`/comments/${element.id}`)
+    .then(response => response.json())
+    .then(comments => {
+        if (comments.length == 0) {
+            document.querySelector(`#modal-body-empty-${ element.id }`).style.display = 'block';
+        }
+        else {
+            comments.forEach(eachComment);
+        }
+    })
+    .catch(error => {
+        console.log(error);
+    })
+
+    function eachComment(element) {
+
+        let body = document.createElement('div');
+        body.id = `modal-body-${ element.post }`;
+
+        let commenterElement = document.createElement('h5');
+        commenterElement.className = 'commenter-ele';
+        let commenter = document.createTextNode(`${element.commenter}`);
+        commenterElement.appendChild(commenter);
+
+        let commentElement = document.createElement('p');
+        commentElement.className = 'comment-ele';
+        let comment = document.createTextNode(`${element.comment}`);
+        commentElement.appendChild(comment);
+
+        let timestampElement = document.createElement('p');
+        timestampElement.className = 'timestamp-ele';
+        let timestamp = document.createTextNode(`${element.timestamp}`);
+        timestampElement.appendChild(timestamp);
+
+        let breakline = document.createElement('hr');
+        breakline.className = 'breakline-comment';
+
+        body.appendChild(commenterElement);
+        body.appendChild(commentElement);
+        body.appendChild(timestampElement);
+        body.appendChild(breakline);
+
+        let parent = document.querySelector(`#modal-body-parent-${element.post}`);
+        parent.appendChild(body);
+    }
+
+    // Post Comment
+    document.querySelector(`#comment-post-${ element.id }`).addEventListener('click', () => postComment(element.id))
+}
+
+function postComment(id) {
+    let request = new Request(
+        `/comments/${id}`,
+        {headers: {'X-CSRFToken': csrftoken}}
+    );
+    fetch(request, {
+        method: 'POST',
+        mode: 'same-origin',
+        body: JSON.stringify({
+            commenter: document.querySelector('strong').innerText,
+            comment: document.querySelector(`#comment-field-${id}`).value,
+            post: id
+        })
+    })
+    location.reload();
 }

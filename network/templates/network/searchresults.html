@@ -5,7 +5,11 @@
     <!-- Displays search results -->
     {% if matched %}
         <div class="container" id="search-results-container">
-            <h2 id="search-results-header">Query for '{{ query }}'</h2>
+        {% if onematch %}
+            <h2 id="search-results-header">{{ onematch }}</h2>
+        {% else %}
+            <h2 id="search-results-header">{{ multiplematch }}</h2>
+        {% endif %}
         </div>
         <div id="matched" class="container">
             {% for profile in matched %}
@@ -19,8 +23,4 @@
             <h2>{{ message }}</h2>
         </div>
     {% endif %}
-{% endblock %}
-
-{% block script %}
-    <script src="{% static 'network/profile.js' %}"></script>
 {% endblock %}

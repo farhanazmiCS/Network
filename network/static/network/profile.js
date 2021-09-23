@@ -333,7 +333,10 @@ function editPost(post) {
                     post: originalContent
                 })
             })
-            location.reload();
+            .then(() => {
+                document.querySelector(`#post-content-${post.id}`).innerHTML = originalContent;
+                document.querySelector(`#btn-close-edit-${post.id}`).click();
+            })
         }
         else {
             // Then, take the edit field and post the data
@@ -346,7 +349,10 @@ function editPost(post) {
                     post: document.querySelector(`#edit-field-${post.id}`).value
                 })
             })
-            location.reload();
+            .then(() => {
+                document.querySelector(`#post-content-${post.id}`).innerHTML = document.querySelector(`#edit-field-${post.id}`).value;
+                document.querySelector(`#btn-close-edit-${post.id}`).click();
+            })
         }
     })
 }
@@ -573,12 +579,12 @@ function viewComment(element) {
     }
 
     // Post Comment
-    document.querySelector(`#comment-post-${ element.id }`).addEventListener('click', () => postComment(element.id))
+    document.querySelector(`#comment-post-${ element.id }`).addEventListener('click', () => postComment(element))
 }
 
-function postComment(id) {
+function postComment(element) {
     let request = new Request(
-        `/comments/${id}`,
+        `/comments/${element.id}`,
         {headers: {'X-CSRFToken': csrftoken}}
     );
     fetch(request, {
@@ -586,9 +592,45 @@ function postComment(id) {
         mode: 'same-origin',
         body: JSON.stringify({
             commenter: document.querySelector('strong').innerText,
-            comment: document.querySelector(`#comment-field-${id}`).value,
-            post: id
+            comment: document.querySelector(`#comment-field-${element.id}`).value,
+            post: element.id
         })
     })
-    location.reload();
+    .then(() => {
+        let parent = document.querySelector(`#modal-body-parent-${element.id}`);
+        let commentDiv = document.createElement('div');
+        commentDiv.id = `modal-body-${element.id}`;
+
+        let commenterElement = document.createElement('h5');
+        commenterElement.className = 'commenter-ele';
+        let commenter = document.createTextNode(`${document.querySelector('strong').innerText}`);
+        commenterElement.appendChild(commenter);
+
+        let commentElement = document.createElement('p');
+        commentElement.className = 'comment-ele';
+        let comment = document.createTextNode(`${document.querySelector(`#comment-field-${element.id}`).value}`);
+        commentElement.appendChild(comment);
+
+        let timestampElement = document.createElement('p');
+        timestampElement.className = 'timestamp-ele';
+        let timestamp = document.createTextNode(`${element.timestamp}`);
+        timestampElement.appendChild(timestamp);
+
+        let breakline = document.createElement('hr');
+        breakline.className = 'breakline-comment';
+
+        commentDiv.appendChild(commenterElement);
+        commentDiv.appendChild(commentElement);
+        commentDiv.appendChild(timestampElement);
+        commentDiv.appendChild(breakline);
+
+        parent.appendChild(commentDiv);
+
+        document.querySelector(`#comment-field-${element.id}`).value = '';
+
+        // Asynchronously update comment count
+        let comment_count = document.querySelector(`#comment-count-${element.id}`).innerText;
+        let new_count = Number(comment_count) + 1;
+        document.querySelector(`#comment-count-${element.id}`).innerHTML = new_count;
+    })
 }

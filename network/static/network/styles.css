@@ -190,3 +190,9 @@ textarea {
 .title-box {
     display: inline-block;
 }
+
+#login-error {
+    color: red;
+    padding-left: 10px;
+    padding-top: 10px
+}

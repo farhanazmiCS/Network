@@ -108,29 +108,29 @@
         <ul class="pagination">
             {% if page.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="{% url 'index' %}?page=1" aria-label="Previous">
+                    <a class="page-link" href="{% url 'indexFollowing' request.user.username %}?page=1" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="{% url 'index' %}?page={{ page.previous_page_number }}" aria-label="Previous">
+                    <a class="page-link" href="{% url 'indexFollowing' request.user.username %}?page={{ page.previous_page_number }}" aria-label="Previous">
                         <span aria-hidden="true">&#8249; Prev</span>
                     </a>
                 </li>
-                <li class="page-item"><a id="current-page" class="page-link" href="{% url 'index' %}?page={{ page.previous_page_number }}">{{ page_num_before }}</a></li>
+                <li class="page-item"><a id="current-page" class="page-link" href="{% url 'indexFollowing' request.user.username %}?page={{ page.previous_page_number }}">{{ page_num_before }}</a></li>
             {% endif %}
                 
             <li class="page-item active"><a id="current-page" class="page-link">{{ page_num }}</a></li>
                 
             {% if page.has_next %}
-                <li class="page-item"><a id="current-page" class="page-link" href="{% url 'index' %}?page={{ page.next_page_number }}">{{ page_num_after }}</a></li>
+                <li class="page-item"><a id="current-page" class="page-link" href="{% url 'indexFollowing' request.user.username %}?page={{ page.next_page_number }}">{{ page_num_after }}</a></li>
                 <li class="page-item">
-                    <a class="page-link" href="{% url 'index' %}?page={{ page.next_page_number }}" aria-label="Next">
+                    <a class="page-link" href="{% url 'indexFollowing' request.user.username %}?page={{ page.next_page_number }}" aria-label="Next">
                         <span aria-hidden="true">Next &#8250;</span>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="{% url 'index' %}?page={{ last_page }}" aria-label="Next">
+                    <a class="page-link" href="{% url 'indexFollowing' request.user.username %}?page={{ last_page }}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>

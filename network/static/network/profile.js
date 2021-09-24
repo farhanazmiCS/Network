@@ -632,5 +632,7 @@ function postComment(element) {
         let comment_count = document.querySelector(`#comment-count-${element.id}`).innerText;
         let new_count = Number(comment_count) + 1;
         document.querySelector(`#comment-count-${element.id}`).innerHTML = new_count;
+
+        document.querySelector(`#modal-body-empty-${element.id}`).style.display = 'none';
     })
 }

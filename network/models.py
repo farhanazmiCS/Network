@@ -13,7 +13,7 @@ class User(AbstractUser):
             "username": self.username,
             "followers": [follower.username for follower in self.followers.all()],
             "following": [following.username for following in self.following.all()],
-            "follower_count": len(self.followers.all()),
+            "follower_count": len(self.follower.all()),
             "following_count": len(self.following.all()),
         }
 

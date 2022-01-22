@@ -8,6 +8,8 @@ A twitter-like social media web application that allows users to make posts, com
 
 You can try the app yourself [here](https://project4-network.herokuapp.com/)!
 
+__NOTE: Works best on desktop.__
+
 ## Video Demo
 
 View this application in action [here](https://youtu.be/d3nq7swyiuU)!
